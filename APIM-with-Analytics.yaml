@@ -270,7 +270,6 @@ Resources:
             - set -e
             - 'export PATH=~/.local/bin:$PATH'
             - mkdir -p ~/.aws
-            - mkdir -p /home/ubuntu/test1
             - cat > ~/.aws/config << EOF
             - '[default]'
             - !Join
@@ -301,7 +300,7 @@ Resources:
                   /etc/puppet/hieradata/dev/wso2/wso2am_runtime/pattern-2/default.yaml
             - apt-get install -y python3-pip
             - pip3 install boto3
-            - !Sub "PRIVATE_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMAnalyticsInstance)"
+            - !Sub "PRIVATE_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMAnalyticsInstance1)"
             - !Join
               - ''
               - - sed -i "s/CF_ANALYTICS_IP/
@@ -350,7 +349,6 @@ Resources:
 
             - echo "Waiting for Cluster lock..."
             - bash /usr/local/bin/acquire_lock.sh
-            - mkdir -p /home/ubuntu/test2
             - export FACTER_product_name=wso2am_runtime
             - export FACTER_product_version=2.2.0
             - export FACTER_product_profile=default
@@ -388,7 +386,6 @@ Resources:
                   - Endpoint.Port
                 - /g" /usr/local/bin/provision_db_apim.sh
             - bash /usr/local/bin/provision_db_apim.sh
-            - mkdir -p /home/ubuntu/test3
             - echo "Releasing lock..."
             - /usr/local/bin/sync_lock apim unlock
             - 'if [ ! -d "/mnt/efs/synapse-configs" ]; then'
@@ -401,14 +398,13 @@ Resources:
             - >-
               ln -s /mnt/efs/synapse-configs/synapse-configs
               /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs
-            - mkdir -p /home/ubuntu/test4
             - apt-get --purge remove puppet mysql-client -y
             - rm -rf /etc/puppet
             - /mnt/wso2am-2.2.0/bin/wso2server.sh start
             - echo 'export HISTTIMEFORMAT="%F %T "' >> /etc/profile.d/history.sh
             - cat /dev/null > ~/.bash_history && history -c
     DependsOn:
-      - WSO2APIMAnalyticsNodeAutoScalingGroup
+      - WSO2APIMAnalyticsNode1AutoScalingGroup
       - WSO2APIMSecurityGroup
       - WSO2APIMLoadBalancer
       - WSO2APIMVPCInternetGatewayAttachment
@@ -430,6 +426,188 @@ Resources:
     DependsOn:
       - WSO2APIMLoadBalancer
       - WSO2APIMNode1LaunchConfiguration
+  WSO2APIMNode2LaunchConfiguration:
+    Type: 'AWS::AutoScaling::LaunchConfiguration'
+    Properties:
+      ImageId: !FindInMap
+        - WSO2APIMAMIRegionMap
+        - !Ref 'AWS::Region'
+        - Ubuntu140464bit
+      InstanceType: t2.medium
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: '20'
+            VolumeType: gp2
+            DeleteOnTermination: 'true'
+      KeyName: !Ref KeyPairName
+      SecurityGroups:
+        - !Ref WSO2APIMSecurityGroup
+      UserData: !Base64
+        'Fn::Join':
+          - |+
+          - - '#!/bin/bash'
+            - set -e
+            - 'export PATH=~/.local/bin:$PATH'
+            - mkdir -p ~/.aws
+            - cat > ~/.aws/config << EOF
+            - '[default]'
+            - !Join
+              - ''
+              - - 'region = '
+                - !Ref 'AWS::Region'
+            - output = text
+            - EOF
+            - mkdir -p /mnt/efs
+            - apt-get update
+            - apt-get install -y nfs-common
+            - !Sub "mount -t nfs4 -o nfsvers=4.1 ${WSO2APIMEFSFileSystem}.efs.${AWS::Region}.amazonaws.com:/ /mnt/efs"
+            - !Join
+              - ''
+              - - sed -i "s/CF_ELB_DNS_NAME/
+                - !GetAtt
+                  - WSO2APIMLoadBalancer
+                  - DNSName
+                - >-
+                  /g"
+                  /etc/puppet/hieradata/dev/wso2/wso2am_runtime/pattern-2/default.yaml
+            - !Join
+              - ''
+              - - sed -i "s/CF_APIM_IP/
+                - 'localhost'
+                - >-
+                  /g"
+                  /etc/puppet/hieradata/dev/wso2/wso2am_runtime/pattern-2/default.yaml
+            - apt-get install -y python3-pip
+            - pip3 install boto3
+            - !Sub "PRIVATE_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMAnalyticsInstance2)"
+            - !Join
+              - ''
+              - - sed -i "s/CF_ANALYTICS_IP/
+                - $PRIVATE_IP
+                - >-
+                  /g"
+                  /etc/puppet/hieradata/dev/wso2/wso2am_runtime/pattern-2/default.yaml
+            - !Join
+              - ''
+              - - sed -i "s/CF_DB_USERNAME/
+                - !Ref DBUsername
+                - /g" /etc/puppet/hieradata/dev/wso2/common.yaml
+            - !Join
+              - ''
+              - - sed -i "s/CF_DB_PASSWORD/
+                - !Ref DBPassword
+                - /g" /etc/puppet/hieradata/dev/wso2/common.yaml
+            - !Join
+              - ''
+              - - sed -i "s/CF_RDS_URL/
+                - !GetAtt
+                  - WSO2APIMDBInstance
+                  - Endpoint.Address
+                - /g" /etc/puppet/hieradata/dev/wso2/common.yaml
+            - export DB_NAME=WSO2AM_DB
+            - !Join
+              - ''
+              - - export DB_HOSTNAME=
+                - !GetAtt
+                  - WSO2APIMDBInstance
+                  - Endpoint.Address
+            - !Join
+              - ''
+              - - export DB_PORT=
+                - !GetAtt
+                  - WSO2APIMDBInstance
+                  - Endpoint.Port
+            - !Join
+              - ''
+              - - export DB_USERNAME=
+                - !Ref DBUsername
+            - !Join
+              - ''
+              - - export DB_PASSWORD=
+                - !Ref DBPassword
+            - echo "Waiting for Cluster lock..."
+            - bash /usr/local/bin/acquire_lock.sh
+
+            - export FACTER_product_name=wso2am_runtime
+            - export FACTER_product_version=2.1.0
+            - export FACTER_product_profile=default
+            - export FACTER_vm_type=openstack
+            - export FACTER_environment=dev
+            - export FACTER_platform=default
+            - export FACTER_use_hieradata=true
+            - export FACTER_pattern=pattern-2
+            - >-
+              puppet apply -e "include wso2am_runtime"
+              --modulepath=/etc/puppet/modules
+              --hiera_config=/etc/puppet/hiera.yaml
+            - !Join
+              - ''
+              - - sed -i "s/CF_DB_USERNAME/
+                - !Ref DBUsername
+                - /g" /usr/local/bin/provision_db_apim.sh
+            - !Join
+              - ''
+              - - sed -i "s/CF_DB_PASSWORD/
+                - !Ref DBPassword
+                - /g" /usr/local/bin/provision_db_apim.sh
+            - !Join
+              - ''
+              - - sed -i "s/CF_DB_HOST/
+                - !GetAtt
+                  - WSO2APIMDBInstance
+                  - Endpoint.Address
+                - /g" /usr/local/bin/provision_db_apim.sh
+            - !Join
+              - ''
+              - - sed -i "s/CF_DB_PORT/
+                - !GetAtt
+                  - WSO2APIMDBInstance
+                  - Endpoint.Port
+                - /g" /usr/local/bin/provision_db_apim.sh
+            - bash /usr/local/bin/provision_db_apim.sh
+
+            - echo "Releasing lock..."
+            - /usr/local/bin/sync_lock apim unlock
+            - 'if [ ! -d "/mnt/efs/synapse-configs" ]; then'
+            - '    mkdir -p /mnt/efs/synapse-configs'
+            - '    cp -r /mnt/wso2am-2.1.0/repository/deployment/server/synapse-configs /mnt/efs/synapse-configs'
+            - fi
+            - >-
+              rm -rf
+              /mnt/wso2am-2.1.0/repository/deployment/server/synapse-configs
+            - >-
+              ln -s /mnt/efs/synapse-configs/synapse-configs
+              /mnt/wso2am-2.1.0/repository/deployment/server/synapse-configs
+
+            - apt-get --purge remove puppet mysql-client -y
+            - rm -rf /etc/puppet
+            - /mnt/wso2am-2.1.0/bin/wso2server.sh start
+            - echo 'export HISTTIMEFORMAT="%F %T "' >> /etc/profile.d/history.sh
+            - cat /dev/null > ~/.bash_history && history -c
+    DependsOn:
+      - WSO2APIMAnalyticsNode2AutoScalingGroup
+      - WSO2APIMSecurityGroup
+      - WSO2APIMLoadBalancer
+      - WSO2APIMVPCInternetGatewayAttachment
+  WSO2APIMNode2AutoScalingGroup:
+    Type: 'AWS::AutoScaling::AutoScalingGroup'
+    Properties:
+      LaunchConfigurationName: !Ref WSO2APIMNode2LaunchConfiguration
+      DesiredCapacity: 1
+      MinSize: 1
+      MaxSize: 1
+      LoadBalancerNames:
+        - !Ref WSO2APIMLoadBalancer
+      VPCZoneIdentifier:
+        - !Ref WSO2APIMPrivateSubnet2
+      Tags:
+        - Key: Name
+          Value: WSO2APIMInstance2
+          PropagateAtLaunch: 'true'
+    DependsOn:
+      - WSO2APIMLoadBalancer
+      - WSO2APIMNode2LaunchConfiguration
   WSO2APIMAnalyticsSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -452,7 +630,7 @@ Resources:
           FromPort: '7711'
           ToPort: '7711'
           SourceSecurityGroupId: !Ref WSO2APIMSecurityGroup
-  WSO2APIMAnalyticsNodeLaunchConfiguration:
+  WSO2APIMAnalyticsNode1LaunchConfiguration:
     Type: 'AWS::AutoScaling::LaunchConfiguration'
     Properties:
       ImageId: !FindInMap
@@ -591,10 +769,10 @@ Resources:
             - /mnt/wso2am-analytics-2.2.0/bin/wso2server.sh start
             - echo 'export HISTTIMEFORMAT="%F %T "' >> /etc/profile.d/history.sh
             - cat /dev/null > ~/.bash_history && history -c
-  WSO2APIMAnalyticsNodeAutoScalingGroup:
+  WSO2APIMAnalyticsNode1AutoScalingGroup:
     Type: 'AWS::AutoScaling::AutoScalingGroup'
     Properties:
-      LaunchConfigurationName: !Ref WSO2APIMAnalyticsNodeLaunchConfiguration
+      LaunchConfigurationName: !Ref WSO2APIMAnalyticsNode1LaunchConfiguration
       DesiredCapacity: 1
       MinSize: 1
       MaxSize: 1
@@ -604,12 +782,168 @@ Resources:
         - !Ref WSO2APIMPrivateSubnet1
       Tags:
         - Key: Name
-          Value: WSO2APIMAnalyticsInstance
+          Value: WSO2APIMAnalyticsInstance1
           PropagateAtLaunch: 'true'
     DependsOn:
       - WSO2APIMAnalyticsLoadBalancer
-      - WSO2APIMAnalyticsNodeLaunchConfiguration
+      - WSO2APIMAnalyticsNode1LaunchConfiguration
+  WSO2APIMAnalyticsNode2LaunchConfiguration:
+    Type: 'AWS::AutoScaling::LaunchConfiguration'
+    Properties:
+      ImageId: !FindInMap
+        - WSO2APIMAnalyticsAMIRegionMap
+        - !Ref 'AWS::Region'
+        - Ubuntu140464bit
+      InstanceType: t2.medium
+      BlockDeviceMappings:
+        - DeviceName: /dev/sda1
+          Ebs:
+            VolumeSize: '20'
+            VolumeType: gp2
+            DeleteOnTermination: 'true'
+      KeyName: !Ref KeyPairName
+      SecurityGroups:
+        - !Ref WSO2APIMAnalyticsSecurityGroup
+      UserData: !Base64
+        'Fn::Join':
+          - |+
 
+          - - '#!/bin/bash'
+            - set -e
+            - 'export PATH=~/.local/bin:$PATH'
+            - mkdir -p ~/.aws
+            - cat > ~/.aws/config << EOF
+            - '[default]'
+            - !Join
+              - ''
+              - - 'region = '
+                - !Ref 'AWS::Region'
+            - output = text
+            - EOF
+            - mkdir -p /mnt/efs
+            - apt-get update
+            - apt-get install -y nfs-common
+            - !Sub "mount -t nfs4 -o nfsvers=4.1 ${WSO2APIMAnalyticsEFSFileSystem}.efs.${AWS::Region}.amazonaws.com:/ /mnt/efs"
+            - !Join
+              - ''
+              - - sed -i "s/CF_ANALYTICS_ELB_DNS_NAME/
+                - !GetAtt
+                  - WSO2APIMAnalyticsLoadBalancer
+                  - DNSName
+                - >-
+                  /g"
+                  /etc/puppet/hieradata/dev/wso2/wso2am_analytics/pattern-1/default.yaml
+            - !Join
+              - ''
+              - - sed -i "s/CF_ANALYTICS_RDS_HOST/
+                - !GetAtt
+                  - WSO2APIMAnalyticsDBInstance
+                  - Endpoint.Address
+                - >-
+                  /g"
+                  /etc/puppet/hieradata/dev/wso2/wso2am_analytics/pattern-1/default.yaml
+            - !Join
+              - ''
+              - - sed -i "s/CF_DB_USERNAME/
+                - !Ref DBUsername
+                - /g" /etc/puppet/hieradata/dev/wso2/common.yaml
+            - !Join
+              - ''
+              - - sed -i "s/CF_DB_PASSWORD/
+                - !Ref DBPassword
+                - /g" /etc/puppet/hieradata/dev/wso2/common.yaml
+            - !Join
+              - ''
+              - - sed -i "s/CF_RDS_URL/
+                - !GetAtt
+                  - WSO2APIMDBInstance
+                  - Endpoint.Address
+                - /g" /etc/puppet/hieradata/dev/wso2/common.yaml
+            - export DB_NAME=WSO2AM_DB
+            - !Join
+              - ''
+              - - export DB_HOSTNAME=
+                - !GetAtt
+                  - WSO2APIMDBInstance
+                  - Endpoint.Address
+            - !Join
+              - ''
+              - - export DB_PORT=
+                - !GetAtt
+                  - WSO2APIMDBInstance
+                  - Endpoint.Port
+            - !Join
+              - ''
+              - - export DB_USERNAME=
+                - !Ref DBUsername
+            - !Join
+              - ''
+              - - export DB_PASSWORD=
+                - !Ref DBPassword
+            - echo "Waiting for Cluster lock..."
+            - bash /usr/local/bin/acquire_lock.sh
+            - export FACTER_product_name=wso2am_analytics
+            - export FACTER_product_version=2.2.0
+            - export FACTER_product_profile=default
+            - export FACTER_vm_type=openstack
+            - export FACTER_environment=dev
+            - export FACTER_platform=default
+            - export FACTER_use_hieradata=true
+            - export FACTER_pattern=pattern-1
+            - >-
+              puppet apply -e "include wso2am_analytics"
+              --modulepath=/etc/puppet/modules
+              --hiera_config=/etc/puppet/hiera.yaml
+            - !Join
+              - ''
+              - - sed -i "s/CF_DB_USERNAME/
+                - !Ref DBUsername
+                - /g" /usr/local/bin/provision_db_analytics.sh
+            - !Join
+              - ''
+              - - sed -i "s/CF_DB_PASSWORD/
+                - !Ref DBPassword
+                - /g" /usr/local/bin/provision_db_analytics.sh
+            - !Join
+              - ''
+              - - sed -i "s/CF_DB_HOST/
+                - !GetAtt
+                  - WSO2APIMAnalyticsDBInstance
+                  - Endpoint.Address
+                - /g" /usr/local/bin/provision_db_analytics.sh
+            - !Join
+              - ''
+              - - sed -i "s/CF_DB_PORT/
+                - !GetAtt
+                  - WSO2APIMAnalyticsDBInstance
+                  - Endpoint.Port
+                - /g" /usr/local/bin/provision_db_analytics.sh
+            - bash /usr/local/bin/provision_db_analytics.sh
+            - echo "Releasing lock..."
+            - /usr/local/bin/sync_lock apim unlock
+            - apt-get --purge remove puppet mysql-client -y
+            - rm -rf /etc/puppet
+            - /mnt/wso2am-analytics-2.2.0/bin/wso2server.sh start
+            - echo 'export HISTTIMEFORMAT="%F %T "' >> /etc/profile.d/history.sh
+            - cat /dev/null > ~/.bash_history && history -c
+  WSO2APIMAnalyticsNode2AutoScalingGroup:
+    Type: 'AWS::AutoScaling::AutoScalingGroup'
+    Properties:
+      LaunchConfigurationName: !Ref WSO2APIMAnalyticsNode2LaunchConfiguration
+      DesiredCapacity: 1
+      MinSize: 1
+      MaxSize: 1
+      LoadBalancerNames:
+        - !Ref WSO2APIMAnalyticsLoadBalancer
+      VPCZoneIdentifier:
+        - !Ref WSO2APIMPrivateSubnet2
+      Tags:
+        - Key: Name
+          Value: WSO2APIMAnalyticsInstance2
+          PropagateAtLaunch: 'true'
+    DependsOn:
+      - WSO2APIMAnalyticsLoadBalancer
+      - WSO2APIMAnalyticsNode2LaunchConfiguration
   # load balancer configurations
   WSO2APIMLoadBalancerSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
@@ -802,6 +1136,40 @@ Parameters:
     Description: A previously uploaded certificate to use at the Load Balancer Listeners.
     Type: String
     MinLength: 1
+  JDK:
+    Type: String
+    Default: "JDK8"
+    Description: Target Java version
+    AllowedValues:
+      - JDK7
+      - JDK8
+  DBEngine:
+    Type: String
+    Default: "mysql"
+    Description: Database Engine
+    AllowedValues:
+      - mysql
+      - postgres
+      - mariadb
+      - sqlserver-ex
+      - oracle-se
+  DBEngineVersion:
+    Type: String
+    Default: "5.6.35"
+    Description: Database Engine version
+  Image:
+    Type: String
+    Default: "ami-08c64c72"
+    Description: The AMI id
+  WUMUsername:
+    Type: String
+    Default: ""
+    Description: Enter WUM user name
+  WUMPassword:
+    Type: String
+    Default: ""
+    NoEcho: true
+    Description: Enter WUM user password to get the updated WSO2 products deployed. If not provided standard released pack will be deployed
   DBUsername:
     Description: The username to be used in the WSO2 AM DB.
     Type: String
@@ -835,11 +1203,11 @@ Mappings:
     us-east-1:
       Ubuntu140464bit: ami-0f61d65f6a550b00b
     us-east-2:
-      Ubuntu140464bit: ami-53113f36
+      Ubuntu140464bit: ami-to-be-added
     us-west-1:
-      Ubuntu140464bit: ami-53281033
+      Ubuntu140464bit: ami-to-be-added
     us-west-2:
-      Ubuntu140464bit: ami-6e05d716
+      Ubuntu140464bit: ami-to-be-added
     ca-central-1:
       Ubuntu140464bit: ami-to-be-added
     sa-east-1:
@@ -862,13 +1230,13 @@ Mappings:
     eu-west-2:
       Ubuntu140464bit: ami-to-be-added
     us-east-1:
-      Ubuntu140464bit: ami-0aeae09880fc175cc
+      Ubuntu140464bit: ami-034b9c4c9f26cbe0b
     us-east-2:
-      Ubuntu140464bit: ami-68efc10d
+      Ubuntu140464bit: ami-to-be-added
     us-west-1:
-      Ubuntu140464bit: ami-b32911d3
+      Ubuntu140464bit: ami-to-be-added
     us-west-2:
-      Ubuntu140464bit: ami-0904d671
+      Ubuntu140464bit: ami-to-be-added
     ca-central-1:
       Ubuntu140464bit: ami-to-be-added
     sa-east-1:
