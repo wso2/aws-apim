@@ -1,6 +1,6 @@
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
-  WSO2 API Manager deployment with WSO2 API Manager Analytics for AWS Marketplace
+  WSO2 API Manager deployment with WSO2 API Manager Analytics
 Metadata:
   'AWS::CloudFormation::Interface':
     ParameterGroups:
@@ -125,11 +125,19 @@ Resources:
         - WSO2APIMEIP
         - AllocationId
       SubnetId: !Ref WSO2APIMPublicSubnet1
+  WSO2BastionEIPAssociation:
+    Type: 'AWS::EC2::EIPAssociation'
+    Properties:
+      AllocationId: !GetAtt WSO2BastionEIP.AllocationId
+      InstanceId: !Ref WSO2BastionInstance
   WSO2APIMEIP:
     Type: 'AWS::EC2::EIP'
     Properties:
       Domain: vpc
-
+  WSO2BastionEIP:
+    Type: 'AWS::EC2::EIP'
+    Properties:
+      Domain: vpc
   # database configurations
   WSO2APIMDBInstanceSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
@@ -181,7 +189,7 @@ Resources:
         - !Ref WSO2APIMPrivateSubnet1
         - !Ref WSO2APIMPrivateSubnet2
 
-  # file system configurations
+  # File system configurations
   WSO2APIMEFSSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -222,13 +230,17 @@ Resources:
       SecurityGroups:
         - !Ref WSO2APIMEFSSecurityGroup
 
-  # product configurations
+  # Product configurations
   WSO2APIMSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
       VpcId: !Ref WSO2APIMVPC
       GroupDescription: WSO2 API Manager Security Group
       SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: '9763'
           ToPort: '9763'
@@ -245,6 +257,28 @@ Resources:
           FromPort: '5672'
           ToPort: '5672'
           SourceSecurityGroupId: !Ref WSO2APIMLoadBalancerSecurityGroup
+  WSO2BastionInstance:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      DisableApiTermination: 'false'
+      InstanceInitiatedShutdownBehavior: stop
+      ImageId: !FindInMap
+        - WSO2APIMAMIRegionMap
+        - !Ref 'AWS::Region'
+        - Ubuntu140464bit
+      InstanceType: t2.micro
+      KeyName: !Ref KeyPairName
+      Monitoring: 'false'
+      Tags:
+        - Key: Name
+          Value: WSO2BastionInstance
+      NetworkInterfaces:
+        - DeleteOnTermination: 'true'
+          Description: Primary network interface
+          DeviceIndex: 0
+          SubnetId: !Ref WSO2APIMPublicSubnet1
+          GroupSet:
+            - !Ref WSO2APIMSecurityGroup
   WSO2APIMNode1LaunchConfiguration:
     Type: 'AWS::AutoScaling::LaunchConfiguration'
     Properties:
@@ -530,7 +564,7 @@ Resources:
             - bash /usr/local/bin/acquire_lock.sh
 
             - export FACTER_product_name=wso2am_runtime
-            - export FACTER_product_version=2.1.0
+            - export FACTER_product_version=2.2.0
             - export FACTER_product_profile=default
             - export FACTER_vm_type=openstack
             - export FACTER_environment=dev
@@ -571,18 +605,18 @@ Resources:
             - /usr/local/bin/sync_lock apim unlock
             - 'if [ ! -d "/mnt/efs/synapse-configs" ]; then'
             - '    mkdir -p /mnt/efs/synapse-configs'
-            - '    cp -r /mnt/wso2am-2.1.0/repository/deployment/server/synapse-configs /mnt/efs/synapse-configs'
+            - '    cp -r /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs /mnt/efs/synapse-configs'
             - fi
             - >-
               rm -rf
-              /mnt/wso2am-2.1.0/repository/deployment/server/synapse-configs
+              /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs
             - >-
               ln -s /mnt/efs/synapse-configs/synapse-configs
-              /mnt/wso2am-2.1.0/repository/deployment/server/synapse-configs
+              /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs
 
             - apt-get --purge remove puppet mysql-client -y
             - rm -rf /etc/puppet
-            - /mnt/wso2am-2.1.0/bin/wso2server.sh start
+            - /mnt/wso2am-2.2.0/bin/wso2server.sh start
             - echo 'export HISTTIMEFORMAT="%F %T "' >> /etc/profile.d/history.sh
             - cat /dev/null > ~/.bash_history && history -c
     DependsOn:
@@ -614,6 +648,10 @@ Resources:
       VpcId: !Ref WSO2APIMVPC
       GroupDescription: WSO2 API Manager Analytics Security Group
       SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: '9763'
           ToPort: '9763'
@@ -1118,6 +1156,9 @@ Outputs:
           - DNSName
         - ':9443/carbon'
     Description: APIM Analytics Management Console
+  BastionEIP:
+    Value: !Sub '${WSO2BastionInstance.PublicIp}'
+    Description: Elastic IP of the Bastion Instance
 Parameters:
   AWSAccessKeyId:
     Description: >-
@@ -1157,10 +1198,6 @@ Parameters:
     Type: String
     Default: "5.6.35"
     Description: Database Engine version
-  Image:
-    Type: String
-    Default: "ami-08c64c72"
-    Description: The AMI id
   WUMUsername:
     Type: String
     Default: ""
