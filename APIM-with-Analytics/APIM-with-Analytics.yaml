@@ -26,10 +26,20 @@ Metadata:
         default: AWS Access Secret Key
       CertificateName:
         default: Which certificate should be used at the Load Balancer for APIM?
+      KeyPairName:
+        default: Key Pair Name
       DBUsername:
         default: APIM Database Master username
       DBPassword:
         default: APIM Database Master password
+      DBEngine:
+        default: DB Engine
+      DBEngineVersion:
+        default: DB Engine Version
+      WUMUsername:
+        default: WUM Username
+      WUMPassword:
+        default: WUM Password
 Resources:
   # networking configurations
   WSO2APIMVPC:
@@ -151,6 +161,7 @@ Resources:
           CidrIp: 0.0.0.0/0
   WSO2APIMDBInstance:
     Type: 'AWS::RDS::DBInstance'
+    DeletionPolicy: Delete
     Properties:
       VPCSecurityGroups:
         - !Ref WSO2APIMDBInstanceSecurityGroup
@@ -167,6 +178,7 @@ Resources:
       DBSubnetGroupName: !Ref WSO2APIMDBSubnetGroup
   WSO2APIMAnalyticsDBInstance:
     Type: 'AWS::RDS::DBInstance'
+    DeletionPolicy: Delete
     Properties:
       VPCSecurityGroups:
         - !Ref WSO2APIMDBInstanceSecurityGroup
@@ -279,6 +291,14 @@ Resources:
           SubnetId: !Ref WSO2APIMPublicSubnet1
           GroupSet:
             - !Ref WSO2APIMSecurityGroup
+      UserData: !Base64
+        'Fn::Join':
+          - |+
+
+          - - '#!/bin/bash'
+            - set -e
+            - !Sub "echo ${WUMUsername} ${WUMPassword}>> /home/ubuntu/hello.txt"
+
   WSO2APIMNode1LaunchConfiguration:
     Type: 'AWS::AutoScaling::LaunchConfiguration'
     Properties:
@@ -303,6 +323,7 @@ Resources:
           - - '#!/bin/bash'
             - set -e
             - 'export PATH=~/.local/bin:$PATH'
+            - !Sub "./home/ubuntu/apim-init.sh ${WUMUsername} ${WUMPassword}"
             - mkdir -p ~/.aws
             - cat > ~/.aws/config << EOF
             - '[default]'
@@ -483,6 +504,7 @@ Resources:
           - - '#!/bin/bash'
             - set -e
             - 'export PATH=~/.local/bin:$PATH'
+            - !Sub "./home/ubuntu/apim-init.sh ${WUMUsername} ${WUMPassword}"
             - mkdir -p ~/.aws
             - cat > ~/.aws/config << EOF
             - '[default]'
@@ -653,6 +675,10 @@ Resources:
           ToPort: 22
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
+          FromPort: '4040'
+          ToPort: '4040'
+          SourceSecurityGroupId: !Ref WSO2APIMAnalyticsLoadBalancerSecurityGroup
+        - IpProtocol: tcp
           FromPort: '9763'
           ToPort: '9763'
           SourceSecurityGroupId: !Ref WSO2APIMAnalyticsLoadBalancerSecurityGroup
@@ -692,6 +718,7 @@ Resources:
           - - '#!/bin/bash'
             - set -e
             - 'export PATH=~/.local/bin:$PATH'
+            - !Sub "./home/ubuntu/apim-analytics-init.sh ${WUMUsername} ${WUMPassword}"
             - mkdir -p ~/.aws
             - cat > ~/.aws/config << EOF
             - '[default]'
@@ -849,6 +876,7 @@ Resources:
           - - '#!/bin/bash'
             - set -e
             - 'export PATH=~/.local/bin:$PATH'
+            - !Sub "./home/ubuntu/apim-analytics-init.sh ${WUMUsername} ${WUMPassword}"
             - mkdir -p ~/.aws
             - cat > ~/.aws/config << EOF
             - '[default]'
@@ -1077,10 +1105,18 @@ Resources:
           ToPort: '9763'
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
+          FromPort: '4040'
+          ToPort: '4040'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
           FromPort: '9443'
           ToPort: '9443'
           CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: '4040'
+          ToPort: '4040'
+          CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: '9763'
           ToPort: '9763'
@@ -1103,6 +1139,12 @@ Resources:
       Listeners:
         - LoadBalancerPort: '9763'
           InstancePort: '9763'
+          Protocol: HTTP
+          InstanceProtocol: HTTP
+          PolicyNames:
+            - LBStickyPolicy
+        - LoadBalancerPort: '4040'
+          InstancePort: '4040'
           Protocol: HTTP
           InstanceProtocol: HTTP
           PolicyNames:
@@ -1156,9 +1198,15 @@ Outputs:
           - DNSName
         - ':9443/carbon'
     Description: APIM Analytics Management Console
-  BastionEIP:
-    Value: !Sub '${WSO2BastionInstance.PublicIp}'
-    Description: Elastic IP of the Bastion Instance
+  SparkUIURL:
+    Value: !Join
+      - ''
+      - - 'http://'
+        - !GetAtt
+          - WSO2APIMAnalyticsLoadBalancer
+          - DNSName
+        - ':4040/jobs'
+    Description: Spark UI Management Console
 Parameters:
   AWSAccessKeyId:
     Description: >-
@@ -1238,7 +1286,7 @@ Mappings:
     eu-west-2:
       Ubuntu140464bit: ami-to-be-added
     us-east-1:
-      Ubuntu140464bit: ami-0f61d65f6a550b00b
+      Ubuntu140464bit: ami-0819612b0d4ab6b27
     us-east-2:
       Ubuntu140464bit: ami-to-be-added
     us-west-1:
@@ -1267,7 +1315,7 @@ Mappings:
     eu-west-2:
       Ubuntu140464bit: ami-to-be-added
     us-east-1:
-      Ubuntu140464bit: ami-034b9c4c9f26cbe0b
+      Ubuntu140464bit: ami-0768c275664a38f1b
     us-east-2:
       Ubuntu140464bit: ami-to-be-added
     us-west-1:
