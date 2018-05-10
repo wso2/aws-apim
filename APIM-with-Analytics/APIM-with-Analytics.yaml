@@ -19,6 +19,8 @@ Metadata:
         Parameters:
           - DBUsername
           - DBPassword
+          - DBEngine
+          - DBEngineVersion
     ParameterLabels:
       AWSAccessKeyId:
         default: AWS Access Key ID
@@ -40,6 +42,8 @@ Metadata:
         default: WUM Username
       WUMPassword:
         default: WUM Password
+      SSHIP:
+        default: SSH IP
 Resources:
   # networking configurations
   WSO2APIMVPC:
@@ -200,7 +204,6 @@ Resources:
       SubnetIds:
         - !Ref WSO2APIMPrivateSubnet1
         - !Ref WSO2APIMPrivateSubnet2
-
   # File system configurations
   WSO2APIMEFSSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
@@ -241,8 +244,17 @@ Resources:
       FileSystemId: !Ref WSO2APIMAnalyticsEFSFileSystem
       SecurityGroups:
         - !Ref WSO2APIMEFSSecurityGroup
-
   # Product configurations
+  BastionSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      VpcId: !Ref WSO2APIMVPC
+      GroupDescription: WSO2 API Manager Security Group
+      SecurityGroupIngress:
+        - IpProtocol: tcp
+          FromPort: 22
+          ToPort: 22
+          CidrIp: 0.0.0.0/0
   WSO2APIMSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -253,6 +265,10 @@ Resources:
           FromPort: 22
           ToPort: 22
           CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '8280'
+          ToPort: '8280'
+          SourceSecurityGroupId: !Ref WSO2APIMLoadBalancerSecurityGroup
         - IpProtocol: tcp
           FromPort: '9763'
           ToPort: '9763'
@@ -290,15 +306,7 @@ Resources:
           DeviceIndex: 0
           SubnetId: !Ref WSO2APIMPublicSubnet1
           GroupSet:
-            - !Ref WSO2APIMSecurityGroup
-      UserData: !Base64
-        'Fn::Join':
-          - |+
-
-          - - '#!/bin/bash'
-            - set -e
-            - !Sub "echo ${WUMUsername} ${WUMPassword}>> /home/ubuntu/hello.txt"
-
+            - !Ref BastionSecurityGroup
   WSO2APIMNode1LaunchConfiguration:
     Type: 'AWS::AutoScaling::LaunchConfiguration'
     Properties:
@@ -1029,6 +1037,10 @@ Resources:
           FromPort: '8243'
           ToPort: '8243'
           CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '8280'
+          ToPort: '8280'
+          CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
         - IpProtocol: tcp
           FromPort: '9763'
@@ -1041,6 +1053,10 @@ Resources:
         - IpProtocol: tcp
           FromPort: '8243'
           ToPort: '8243'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '8280'
+          ToPort: '8280'
           CidrIp: 0.0.0.0/0
   WSO2APIMLoadBalancer:
     Type: 'AWS::ElasticLoadBalancing::LoadBalancer'
@@ -1056,6 +1072,12 @@ Resources:
       Listeners:
         - LoadBalancerPort: '9763'
           InstancePort: '9763'
+          Protocol: HTTP
+          InstanceProtocol: HTTP
+          PolicyNames:
+            - LBStickyPolicy
+        - LoadBalancerPort: '8280'
+          InstancePort: '8280'
           Protocol: HTTP
           InstanceProtocol: HTTP
           PolicyNames:
@@ -1267,6 +1289,9 @@ Parameters:
     Default: wso2carbon
     MinLength: 8
     NoEcho: true
+  SSHIP:
+    Description: IP address of the machine used to SSH into the bastion instance
+    Type: String
 Mappings:
   WSO2APIMAMIRegionMap:
     ap-northeast-1:
@@ -1286,7 +1311,7 @@ Mappings:
     eu-west-2:
       Ubuntu140464bit: ami-to-be-added
     us-east-1:
-      Ubuntu140464bit: ami-0819612b0d4ab6b27
+      Ubuntu140464bit: ami-061486747e1562a57
     us-east-2:
       Ubuntu140464bit: ami-to-be-added
     us-west-1:
@@ -1315,7 +1340,7 @@ Mappings:
     eu-west-2:
       Ubuntu140464bit: ami-to-be-added
     us-east-1:
-      Ubuntu140464bit: ami-0768c275664a38f1b
+      Ubuntu140464bit: ami-04dfc742da7211879
     us-east-2:
       Ubuntu140464bit: ami-to-be-added
     us-west-1:
