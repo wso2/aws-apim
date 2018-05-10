@@ -27,23 +27,25 @@ Metadata:
       AWSAccessKeySecret:
         default: AWS Access Secret Key
       CertificateName:
-        default: Which certificate should be used at the Load Balancer for APIM?
+        default: Server Certificate Name
       KeyPairName:
         default: Key Pair Name
       DBUsername:
-        default: APIM Database Master username
+        default: Database Master Username
       DBPassword:
-        default: APIM Database Master password
+        default: Database Master Password
       DBEngine:
-        default: DB Engine
+        default: Database Engine
       DBEngineVersion:
-        default: DB Engine Version
+        default: Database Engine Version
+      JDK:
+        default: JDK Version
       WUMUsername:
         default: WUM Username
       WUMPassword:
         default: WUM Password
       SSHIP:
-        default: SSH IP
+        default: IP Used to SSH into Bastion Instance
 Resources:
   # networking configurations
   WSO2APIMVPC:

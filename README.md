@@ -16,7 +16,7 @@ git clone https://github.com/wso2/aws-apim.git
 4. Go to [AWS CloudFormation console](https://console.aws.amazon.com/cloudformation/home) and select ``Launch Cloudformer``.
 
 5. Browse to the cloned repository and select the Cloudformation template for the preferred deployment pattern and proceed with the deployment.
-
+    <br> Allowed patterns are [APIM-with-Analytics](https://github.com/wso2/aws-apim/tree/master/APIM-with-Analytics).
 6. Follow the on screen instructions and provide the SSH key given in step 2, Server-Certificate-Name given in step 3 and other requested information and proceed.
 
 7. Access the web UIs via the URLs available in the **Outputs** tab and login using the following credentials.
@@ -24,3 +24,5 @@ git clone https://github.com/wso2/aws-apim.git
    * Password: admin
 
 ![Successful stack](APIM-with-Analytics/images/stackcreation.png)
+
+**NOTE:** The services available through above URLs may take a around 10 minutes to become available, after stack creation.
