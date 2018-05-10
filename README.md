@@ -9,7 +9,7 @@ This repository contains CloudFormation templates to deploy WSO2 API Manager wit
 git clone https://github.com/wso2/aws-apim.git
 ```
 
-2. Go to [AWS console](https://console.aws.amazon.com/ec2/v2/home#KeyPairs:sort=keyName) and create a key value pair. This will be used to ssh into the instances.
+2. Go to [AWS console](https://console.aws.amazon.com/ec2/v2/home#KeyPairs:sort=keyName) and create a key value pair in **us-east-1** region. This will be used to ssh into the instances.
 
 3. Add a Server Certificate to AWS using ACM or IAM as explained [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_server-certs.html).
 
