@@ -23,6 +23,8 @@ git clone https://github.com/wso2/aws-apim.git
    * Username: admin <br>
    * Password: admin
 
+APIM Gateway Endpoints are available in the **Outputs** tab.
+
 ![Successful stack](APIM-with-Analytics/images/stackcreation.png)
 
 **NOTE:** The services available through above URLs may take a around 10 minutes to become available, after stack creation.
