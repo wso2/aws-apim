@@ -1231,6 +1231,22 @@ Outputs:
           - DNSName
         - ':4040/jobs'
     Description: Spark UI Management Console
+  APIMGatewayHTTPSEndpoint:
+    Value: !Join
+      - ''
+      - - ''
+        - !GetAtt
+          - WSO2APIMLoadBalancer
+          - DNSName
+        - ':8243'
+  APIMGatewayHTTPEndpoint:
+    Value: !Join
+      - ''
+      - - ''
+        - !GetAtt
+          - WSO2APIMLoadBalancer
+          - DNSName
+        - ':8280'
 Parameters:
   AWSAccessKeyId:
     Description: >-
