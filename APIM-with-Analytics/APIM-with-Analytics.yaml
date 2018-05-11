@@ -1248,7 +1248,7 @@ Outputs:
           - WSO2APIMLoadBalancer
           - DNSName
         - ':8280'
-    Description: APIM HTTPS Gateway endpoint
+    Description: APIM HTTP Gateway endpoint
 Parameters:
   AWSAccessKeyId:
     Description: >-
