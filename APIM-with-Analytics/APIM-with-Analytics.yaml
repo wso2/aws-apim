@@ -1239,6 +1239,7 @@ Outputs:
           - WSO2APIMLoadBalancer
           - DNSName
         - ':8243'
+    Description: APIM HTTPS Gateway endpoint
   APIMGatewayHTTPEndpoint:
     Value: !Join
       - ''
@@ -1247,6 +1248,7 @@ Outputs:
           - WSO2APIMLoadBalancer
           - DNSName
         - ':8280'
+    Description: APIM HTTPS Gateway endpoint
 Parameters:
   AWSAccessKeyId:
     Description: >-
