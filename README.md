@@ -25,6 +25,6 @@ git clone https://github.com/wso2/aws-apim.git
 
 APIM Gateway Endpoints are available in the **Outputs** tab.
 
-![Successful stack](APIM-with-Analytics/images/ouput.png)
+![Successful stack](APIM-with-Analytics/images/output.png)
 
 **NOTE:** The services available through above URLs may take a around 10 minutes to become available, after stack creation.
