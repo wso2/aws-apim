@@ -13,3 +13,5 @@ The Cloudformation template creates the following resources in AWS.
 6. A Bastion Instance
 7. RDS Database Instance
 8. An Elastic File System
+
+![vpc](APIM-with-Analytics/images/vpc.png)
