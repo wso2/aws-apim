@@ -15,3 +15,7 @@ The Cloudformation template creates the following resources in AWS.
 8. An Elastic File System
 
 ![vpc](images/vpc-diagram.png)
+
+## Deployment Pattern
+
+![deployement-diagram](images/deployment-diagram.png)
