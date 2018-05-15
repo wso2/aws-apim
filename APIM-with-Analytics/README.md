@@ -14,7 +14,7 @@ The Cloudformation template creates the following resources in AWS.
 7. RDS Database Instance
 8. An Elastic File System
 
-![vpc](images/vpc.png)
+![vpc](images/vpc-diagram.png)
 
 ## Deployment Pattern
 
