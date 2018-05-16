@@ -9,7 +9,13 @@ The Cloudformation template creates the following resources in AWS.
 2. Two Public Subnets
 3. Two Private Subnets
 4. An Elastic Load Balancer
-5. An Internet Gateway
+5. An Internet Gateway (IGW)
 6. A Bastion Instance
 7. RDS Database Instance
 8. An Elastic File System
+
+![vpc](images/vpc-diagram.png)
+
+## Deployment Pattern
+
+![deployement-diagram](images/deployment-diagram.png)
