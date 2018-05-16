@@ -1039,6 +1039,10 @@ Resources:
           ToPort: '9763'
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
+          FromPort: '443'
+          ToPort: '443'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
           FromPort: '9443'
           ToPort: '9443'
           CidrIp: 0.0.0.0/0
@@ -1058,6 +1062,10 @@ Resources:
         - IpProtocol: tcp
           FromPort: '9443'
           ToPort: '9443'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '443'
+          ToPort: '443'
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: '8243'
@@ -1091,7 +1099,7 @@ Resources:
           InstanceProtocol: HTTP
           PolicyNames:
             - LBStickyPolicy
-        - LoadBalancerPort: '9443'
+        - LoadBalancerPort: '443'
           InstancePort: '9443'
           Protocol: HTTPS
           InstanceProtocol: HTTPS
@@ -1136,18 +1144,22 @@ Resources:
           ToPort: '9763'
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
-          FromPort: '4040'
-          ToPort: '4040'
+          FromPort: '443'
+          ToPort: '443'
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: '9443'
           ToPort: '9443'
           CidrIp: 0.0.0.0/0
-      SecurityGroupEgress:
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: '4040'
           ToPort: '4040'
           CidrIp: 0.0.0.0/0
+      SecurityGroupEgress:
         - IpProtocol: tcp
           FromPort: '9763'
           ToPort: '9763'
@@ -1155,6 +1167,18 @@ Resources:
         - IpProtocol: tcp
           FromPort: '9443'
           ToPort: '9443'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '443'
+          ToPort: '443'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '80'
+          ToPort: '80'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '4040'
+          ToPort: '4040'
           CidrIp: 0.0.0.0/0
   WSO2APIMAnalyticsLoadBalancer:
     Type: 'AWS::ElasticLoadBalancing::LoadBalancer'
@@ -1174,13 +1198,13 @@ Resources:
           InstanceProtocol: HTTP
           PolicyNames:
             - LBStickyPolicy
-        - LoadBalancerPort: '4040'
+        - LoadBalancerPort: '80'
           InstancePort: '4040'
           Protocol: HTTP
           InstanceProtocol: HTTP
           PolicyNames:
             - LBStickyPolicy
-        - LoadBalancerPort: '9443'
+        - LoadBalancerPort: '443'
           InstancePort: '9443'
           Protocol: HTTPS
           InstanceProtocol: HTTPS
@@ -1209,7 +1233,7 @@ Outputs:
         - !GetAtt
           - WSO2APIMLoadBalancer
           - DNSName
-        - ':9443/publisher'
+        - '/publisher'
     Description: APIM service publisher URL
   APIMServiceStoreURL:
     Value: !Join
@@ -1218,7 +1242,7 @@ Outputs:
         - !GetAtt
           - WSO2APIMLoadBalancer
           - DNSName
-        - ':9443/store'
+        - '/store'
     Description: APIM service store URL
   APIMAnalyticsServiceURL:
     Value: !Join
@@ -1227,7 +1251,7 @@ Outputs:
         - !GetAtt
           - WSO2APIMAnalyticsLoadBalancer
           - DNSName
-        - ':9443/carbon'
+        - '/carbon'
     Description: APIM Analytics Management Console
   SparkUIURL:
     Value: !Join
@@ -1236,7 +1260,7 @@ Outputs:
         - !GetAtt
           - WSO2APIMAnalyticsLoadBalancer
           - DNSName
-        - ':4040/jobs'
+        - '/jobs'
     Description: Spark UI Management Console
   APIMGatewayHTTPSEndpoint:
     Value: !Join
