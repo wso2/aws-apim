@@ -340,7 +340,7 @@ Resources:
           - - '#!/bin/bash'
             - set -e
             - 'export PATH=~/.local/bin:$PATH'
-            - !Sub "./home/ubuntu/apim-init.sh ${WUMUsername} ${WUMPassword}"
+            - !Sub "./home/ubuntu/apim-init.sh ${WUMUsername} ${WUMPassword} ${JDK}"
             - mkdir -p ~/.aws
             - cat > ~/.aws/config << EOF
             - '[default]'
@@ -392,6 +392,11 @@ Resources:
                 - /g" /etc/puppet/hieradata/dev/wso2/common.yaml
             - !Join
               - ''
+              - - sed -i "s/JDK_VERSION/
+                - !Ref JDK
+                - /g" /etc/puppet/hieradata/dev/wso2/common.yaml
+            - !Join
+              - ''
               - - sed -i "s/CF_RDS_URL/
                 - !GetAtt
                   - WSO2APIMDBInstance
@@ -471,7 +476,6 @@ Resources:
               ln -s /mnt/efs/synapse-configs/synapse-configs
               /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs
             - apt-get --purge remove puppet mysql-client -y
-            - rm -rf /etc/puppet
             - /mnt/wso2am-2.2.0/bin/wso2server.sh start
             - echo 'export HISTTIMEFORMAT="%F %T "' >> /etc/profile.d/history.sh
             - cat /dev/null > ~/.bash_history && history -c
@@ -521,7 +525,7 @@ Resources:
           - - '#!/bin/bash'
             - set -e
             - 'export PATH=~/.local/bin:$PATH'
-            - !Sub "./home/ubuntu/apim-init.sh ${WUMUsername} ${WUMPassword}"
+            - !Sub "./home/ubuntu/apim-init.sh ${WUMUsername} ${WUMPassword} ${JDK}"
             - mkdir -p ~/.aws
             - cat > ~/.aws/config << EOF
             - '[default]'
@@ -573,6 +577,11 @@ Resources:
                 - /g" /etc/puppet/hieradata/dev/wso2/common.yaml
             - !Join
               - ''
+              - - sed -i "s/JDK_VERSION/
+                - !Ref JDK
+                - /g" /etc/puppet/hieradata/dev/wso2/common.yaml
+            - !Join
+              - ''
               - - sed -i "s/CF_RDS_URL/
                 - !GetAtt
                   - WSO2APIMDBInstance
@@ -654,7 +663,7 @@ Resources:
               /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs
 
             - apt-get --purge remove puppet mysql-client -y
-            - rm -rf /etc/puppet
+
             - /mnt/wso2am-2.2.0/bin/wso2server.sh start
             - echo 'export HISTTIMEFORMAT="%F %T "' >> /etc/profile.d/history.sh
             - cat /dev/null > ~/.bash_history && history -c
@@ -735,7 +744,7 @@ Resources:
           - - '#!/bin/bash'
             - set -e
             - 'export PATH=~/.local/bin:$PATH'
-            - !Sub "./home/ubuntu/apim-analytics-init.sh ${WUMUsername} ${WUMPassword}"
+            - !Sub "./home/ubuntu/apim-analytics-init.sh ${WUMUsername} ${WUMPassword} ${JDK}"
             - mkdir -p ~/.aws
             - cat > ~/.aws/config << EOF
             - '[default]'
@@ -776,6 +785,11 @@ Resources:
               - ''
               - - sed -i "s/CF_DB_PASSWORD/
                 - !Ref DBPassword
+                - /g" /etc/puppet/hieradata/dev/wso2/common.yaml
+            - !Join
+              - ''
+              - - sed -i "s/JDK_VERSION/
+                - !Ref JDK
                 - /g" /etc/puppet/hieradata/dev/wso2/common.yaml
             - !Join
               - ''
@@ -847,7 +861,7 @@ Resources:
             - echo "Releasing lock..."
             - /usr/local/bin/sync_lock apim unlock
             - apt-get --purge remove puppet mysql-client -y
-            - rm -rf /etc/puppet
+
             - /mnt/wso2am-analytics-2.2.0/bin/wso2server.sh start
             - echo 'export HISTTIMEFORMAT="%F %T "' >> /etc/profile.d/history.sh
             - cat /dev/null > ~/.bash_history && history -c
@@ -893,7 +907,7 @@ Resources:
           - - '#!/bin/bash'
             - set -e
             - 'export PATH=~/.local/bin:$PATH'
-            - !Sub "./home/ubuntu/apim-analytics-init.sh ${WUMUsername} ${WUMPassword}"
+            - !Sub "./home/ubuntu/apim-analytics-init.sh ${WUMUsername} ${WUMPassword} ${JDK}"
             - mkdir -p ~/.aws
             - cat > ~/.aws/config << EOF
             - '[default]'
@@ -934,6 +948,11 @@ Resources:
               - ''
               - - sed -i "s/CF_DB_PASSWORD/
                 - !Ref DBPassword
+                - /g" /etc/puppet/hieradata/dev/wso2/common.yaml
+            - !Join
+              - ''
+              - - sed -i "s/JDK_VERSION/
+                - !Ref JDK
                 - /g" /etc/puppet/hieradata/dev/wso2/common.yaml
             - !Join
               - ''
@@ -1005,7 +1024,7 @@ Resources:
             - echo "Releasing lock..."
             - /usr/local/bin/sync_lock apim unlock
             - apt-get --purge remove puppet mysql-client -y
-            - rm -rf /etc/puppet
+
             - /mnt/wso2am-analytics-2.2.0/bin/wso2server.sh start
             - echo 'export HISTTIMEFORMAT="%F %T "' >> /etc/profile.d/history.sh
             - cat /dev/null > ~/.bash_history && history -c
@@ -1300,11 +1319,11 @@ Parameters:
     MinLength: 1
   JDK:
     Type: String
-    Default: "JDK8"
+    Default: "jdk-8u144-linux-x64.tar.gz"
     Description: Target Java version
     AllowedValues:
-      - JDK7
-      - JDK8
+      - jdk-7u80-linux-x64.tar.gz
+      - jdk-8u144-linux-x64.tar.gz
   DBEngine:
     Type: String
     Default: "mysql"
@@ -1362,7 +1381,7 @@ Mappings:
     eu-west-2:
       Ubuntu140464bit: ami-to-be-added
     us-east-1:
-      Ubuntu140464bit: ami-061486747e1562a57
+      Ubuntu140464bit: ami-00e12dc85efb3b4da
     us-east-2:
       Ubuntu140464bit: ami-to-be-added
     us-west-1:
@@ -1391,7 +1410,7 @@ Mappings:
     eu-west-2:
       Ubuntu140464bit: ami-to-be-added
     us-east-1:
-      Ubuntu140464bit: ami-04dfc742da7211879
+      Ubuntu140464bit: ami-0e1e0eb5cdb80ffca
     us-east-2:
       Ubuntu140464bit: ami-to-be-added
     us-west-1:
