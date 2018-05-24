@@ -172,14 +172,6 @@ Resources:
           FromPort: '3306'
           ToPort: '3306'
           CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: '1521'
-          ToPort: '1521'
-          CidrIp: 0.0.0.0/0
-        - IpProtocol: tcp
-          FromPort: '5432'
-          ToPort: '5432'
-          CidrIp: 0.0.0.0/0
   WSO2APIMDBInstance:
     Type: 'AWS::RDS::DBInstance'
     DeletionPolicy: Delete
@@ -221,38 +213,6 @@ Resources:
       SubnetIds:
         - !Ref WSO2APIMPrivateSubnet1
         - !Ref WSO2APIMPrivateSubnet2
-  PuppetMaster:
-    Type: 'AWS::EC2::Instance'
-    Properties:
-      SecurityGroups:
-        - !Ref PuppetMasterSecurityGroup
-      KeyName: !Ref KeyPairName
-      ImageId: !FindInMap
-        - WSO2APIMAMIRegionMap
-        - !Ref 'AWS::Region'
-        - Ubuntu140464bit
-      UserData: !Base64
-        'Fn::Join':
-          - |+
-
-          - - '#!/bin/bash'
-            - set -e
-            - 'export PATH=~/.local/bin:$PATH'
-            - chmod u+x master.sh
-            - sudo ./home/ubuntu/puppetmaster.sh puppet
-
-
-  PuppetMasterSecurityGroup:
-    Type: 'AWS::EC2::SecurityGroup'
-    Properties:
-      VpcId: !Ref WSO2APIMVPC
-      GroupDescription: EFS Security Group
-      SecurityGroupIngress:
-      - IpProtocol: tcp
-        FromPort: '2049'
-        ToPort: '2049'
-        CidrIp: 0.0.0.0/0
-
   # File system configurations
   WSO2APIMEFSSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
@@ -1399,35 +1359,6 @@ Parameters:
   SSHIP:
     Description: IP address of the machine used to SSH into the bastion instance
     Type: String
-  DBEngin:
-    Type: String
-    Default: "mysql"
-    Description: Database Engine
-    AllowedValues:
-      - mysql
-      - postgresql
-  DBPor:
-    Type: String
-    Default: "3306"
-    Description: Database port
-    AllowedValues:
-      - 3306
-      - 5432
-  ConnectorJAR:
-    Type: String
-    Default: "mysql-connector-java-5.1.41-bin.jar"
-    Description: Database port
-    AllowedValues:
-      - mysql-connector-java-5.1.41-bin.jar
-      - postgresql-42.2.1.jar
-  SQLDRIVER:
-    Type: String
-    Default: "com.mysql.jdbc.Driver"
-    Description: Database port
-    AllowedValues:
-      - com.mysql.jdbc.Driver
-      - org.postgresql.Driver
-
 Mappings:
   WSO2APIMAMIRegionMap:
     ap-northeast-1:
