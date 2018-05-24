@@ -1378,7 +1378,7 @@ Mappings:
     eu-west-2:
       Ubuntu140464bit: ami-to-be-added
     us-east-1:
-      Ubuntu140464bit: ami-0562f621ed99c5916
+      Ubuntu140464bit: ami-0bf7591c700da551e
     us-east-2:
       Ubuntu140464bit: ami-to-be-added
     us-west-1:
@@ -1407,7 +1407,7 @@ Mappings:
     eu-west-2:
       Ubuntu140464bit: ami-to-be-added
     us-east-1:
-      Ubuntu140464bit: ami-07daa681cf81d9abb
+      Ubuntu140464bit: ami-0c263d40de386d24d
     us-east-2:
       Ubuntu140464bit: ami-to-be-added
     us-west-1:
