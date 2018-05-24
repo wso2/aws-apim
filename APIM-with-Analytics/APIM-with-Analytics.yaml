@@ -42,7 +42,7 @@ Metadata:
       DBPassword:
         default: Database Master Password
       DBEngine:
-        default: Database Engine
+        default: MySQL
       DBEngineVersion:
         default: Database Engine Version
       JDK:
@@ -52,6 +52,10 @@ Metadata:
       WUMPassword:
         default: WUM Password
       SSHIP:
+        default: IP Used to SSH into Bastion Instance
+      DBEngin:
+        default: IP Used to SSH into Bastion Instance
+      DBPor:
         default: IP Used to SSH into Bastion Instance
 Resources:
   # networking configurations
@@ -172,6 +176,14 @@ Resources:
           FromPort: '3306'
           ToPort: '3306'
           CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '1521'
+          ToPort: '1521'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '5432'
+          ToPort: '5432'
+          CidrIp: 0.0.0.0/0
   WSO2APIMDBInstance:
     Type: 'AWS::RDS::DBInstance'
     DeletionPolicy: Delete
@@ -183,7 +195,7 @@ Resources:
       BackupRetentionPeriod: '0'
       DBInstanceIdentifier: WSO2APIMDBInstance
       DBName: WSO2AM_DB
-      Engine: MySQL
+      Engine: !Ref DBEngine
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
       MultiAZ: 'true'
@@ -200,7 +212,7 @@ Resources:
       BackupRetentionPeriod: '0'
       DBInstanceIdentifier: WSO2APIMAnalyticsDBInstance
       DBName: WSO2AMAnalytics_DB
-      Engine: MySQL
+      Engine: !Ref DBEngine
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
       MultiAZ: 'true'
@@ -213,6 +225,38 @@ Resources:
       SubnetIds:
         - !Ref WSO2APIMPrivateSubnet1
         - !Ref WSO2APIMPrivateSubnet2
+  PuppetMaster:
+    Type: 'AWS::EC2::Instance'
+    Properties:
+      SecurityGroups:
+        - !Ref PuppetMasterSecurityGroup
+      KeyName: !Ref KeyPairName
+      ImageId: !FindInMap
+        - WSO2APIMAMIRegionMap
+        - !Ref 'AWS::Region'
+        - Ubuntu140464bit
+      UserData: !Base64
+        'Fn::Join':
+          - |+
+
+          - - '#!/bin/bash'
+            - set -e
+            - 'export PATH=~/.local/bin:$PATH'
+            - chmod u+x master.sh
+            - sudo ./home/ubuntu/puppetmaster.sh puppet
+
+
+  PuppetMasterSecurityGroup:
+    Type: 'AWS::EC2::SecurityGroup'
+    Properties:
+      VpcId: !Ref WSO2APIMVPC
+      GroupDescription: EFS Security Group
+      SecurityGroupIngress:
+      - IpProtocol: tcp
+        FromPort: '2049'
+        ToPort: '2049'
+        CidrIp: 0.0.0.0/0
+
   # File system configurations
   WSO2APIMEFSSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
@@ -425,7 +469,6 @@ Resources:
                 - !Ref DBPassword
 
             - echo "Waiting for Cluster lock..."
-            - bash /usr/local/bin/acquire_lock.sh
             - export FACTER_product_name=wso2am_runtime
             - export FACTER_product_version=2.2.0
             - export FACTER_product_profile=default
@@ -434,6 +477,7 @@ Resources:
             - export FACTER_platform=default
             - export FACTER_use_hieradata=true
             - export FACTER_pattern=pattern-2
+
             - >-
               puppet apply -e "include wso2am_runtime"
               --modulepath=/etc/puppet/modules
@@ -464,7 +508,6 @@ Resources:
                 - /g" /usr/local/bin/provision_db_apim.sh
             - bash /usr/local/bin/provision_db_apim.sh
             - echo "Releasing lock..."
-            - /usr/local/bin/sync_lock apim unlock
             - 'if [ ! -d "/mnt/efs/synapse-configs" ]; then'
             - '    mkdir -p /mnt/efs/synapse-configs'
             - '    cp -r /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs /mnt/efs/synapse-configs'
@@ -609,8 +652,6 @@ Resources:
               - - export DB_PASSWORD=
                 - !Ref DBPassword
             - echo "Waiting for Cluster lock..."
-            - bash /usr/local/bin/acquire_lock.sh
-
             - export FACTER_product_name=wso2am_runtime
             - export FACTER_product_version=2.2.0
             - export FACTER_product_profile=default
@@ -647,10 +688,10 @@ Resources:
                   - WSO2APIMDBInstance
                   - Endpoint.Port
                 - /g" /usr/local/bin/provision_db_apim.sh
-            - bash /usr/local/bin/provision_db_apim.sh
+            - bash /usr/local/bin/provision_db_apim.sh {$DBEngine}
 
             - echo "Releasing lock..."
-            - /usr/local/bin/sync_lock apim unlock
+
             - 'if [ ! -d "/mnt/efs/synapse-configs" ]; then'
             - '    mkdir -p /mnt/efs/synapse-configs'
             - '    cp -r /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs /mnt/efs/synapse-configs'
@@ -820,7 +861,7 @@ Resources:
               - - export DB_PASSWORD=
                 - !Ref DBPassword
             - echo "Waiting for Cluster lock..."
-            - bash /usr/local/bin/acquire_lock.sh
+
             - export FACTER_product_name=wso2am_analytics
             - export FACTER_product_version=2.2.0
             - export FACTER_product_profile=default
@@ -859,7 +900,7 @@ Resources:
                 - /g" /usr/local/bin/provision_db_analytics.sh
             - bash /usr/local/bin/provision_db_analytics.sh
             - echo "Releasing lock..."
-            - /usr/local/bin/sync_lock apim unlock
+
             - apt-get --purge remove puppet mysql-client -y
 
             - /mnt/wso2am-analytics-2.2.0/bin/wso2server.sh start
@@ -983,7 +1024,7 @@ Resources:
               - - export DB_PASSWORD=
                 - !Ref DBPassword
             - echo "Waiting for Cluster lock..."
-            - bash /usr/local/bin/acquire_lock.sh
+
             - export FACTER_product_name=wso2am_analytics
             - export FACTER_product_version=2.2.0
             - export FACTER_product_profile=default
@@ -1022,9 +1063,8 @@ Resources:
                 - /g" /usr/local/bin/provision_db_analytics.sh
             - bash /usr/local/bin/provision_db_analytics.sh
             - echo "Releasing lock..."
-            - /usr/local/bin/sync_lock apim unlock
-            - apt-get --purge remove puppet mysql-client -y
 
+            - apt-get --purge remove puppet mysql-client -y
             - /mnt/wso2am-analytics-2.2.0/bin/wso2server.sh start
             - echo 'export HISTTIMEFORMAT="%F %T "' >> /etc/profile.d/history.sh
             - cat /dev/null > ~/.bash_history && history -c
@@ -1324,12 +1364,13 @@ Parameters:
     AllowedValues:
       - jdk-7u80-linux-x64.tar.gz
       - jdk-8u144-linux-x64.tar.gz
+      - jdk-10.0.1_linux-x64.tar.gz
   DBEngine:
     Type: String
-    Default: "mysql"
+    Default: "MySQL"
     Description: Database Engine
     AllowedValues:
-      - mysql
+      - MySQL
       - postgres
       - mariadb
       - sqlserver-ex
@@ -1362,6 +1403,35 @@ Parameters:
   SSHIP:
     Description: IP address of the machine used to SSH into the bastion instance
     Type: String
+  DBEngin:
+    Type: String
+    Default: "mysql"
+    Description: Database Engine
+    AllowedValues:
+      - mysql
+      - postgresql
+  DBPor:
+    Type: String
+    Default: "3306"
+    Description: Database port
+    AllowedValues:
+      - 3306
+      - 5432
+  ConnectorJAR:
+    Type: String
+    Default: "mysql-connector-java-5.1.41-bin.jar"
+    Description: Database port
+    AllowedValues:
+      - mysql-connector-java-5.1.41-bin.jar
+      - postgresql-42.2.1.jar
+  SQLDRIVER:
+    Type: String
+    Default: "com.mysql.jdbc.Driver"
+    Description: Database port
+    AllowedValues:
+      - com.mysql.jdbc.Driver
+      - org.postgresql.Driver
+
 Mappings:
   WSO2APIMAMIRegionMap:
     ap-northeast-1:
@@ -1381,7 +1451,7 @@ Mappings:
     eu-west-2:
       Ubuntu140464bit: ami-to-be-added
     us-east-1:
-      Ubuntu140464bit: ami-00e12dc85efb3b4da
+      Ubuntu140464bit: ami-0562f621ed99c5916
     us-east-2:
       Ubuntu140464bit: ami-to-be-added
     us-west-1:
@@ -1410,7 +1480,7 @@ Mappings:
     eu-west-2:
       Ubuntu140464bit: ami-to-be-added
     us-east-1:
-      Ubuntu140464bit: ami-0e1e0eb5cdb80ffca
+      Ubuntu140464bit: ami-07daa681cf81d9abb
     us-east-2:
       Ubuntu140464bit: ami-to-be-added
     us-west-1:
