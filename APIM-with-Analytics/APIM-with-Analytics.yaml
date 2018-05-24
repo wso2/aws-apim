@@ -53,10 +53,6 @@ Metadata:
         default: WUM Password
       SSHIP:
         default: IP Used to SSH into Bastion Instance
-      DBEngin:
-        default: IP Used to SSH into Bastion Instance
-      DBPor:
-        default: IP Used to SSH into Bastion Instance
 Resources:
   # networking configurations
   WSO2APIMVPC:
@@ -688,7 +684,7 @@ Resources:
                   - WSO2APIMDBInstance
                   - Endpoint.Port
                 - /g" /usr/local/bin/provision_db_apim.sh
-            - bash /usr/local/bin/provision_db_apim.sh {$DBEngine}
+            - bash /usr/local/bin/provision_db_apim.sh
 
             - echo "Releasing lock..."
 
