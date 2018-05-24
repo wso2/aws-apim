@@ -191,7 +191,7 @@ Resources:
       BackupRetentionPeriod: '0'
       DBInstanceIdentifier: WSO2APIMDBInstance
       DBName: WSO2AM_DB
-      Engine: !Ref DBEngine
+      Engine: MySQL
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
       MultiAZ: 'true'
@@ -208,7 +208,7 @@ Resources:
       BackupRetentionPeriod: '0'
       DBInstanceIdentifier: WSO2APIMAnalyticsDBInstance
       DBName: WSO2AMAnalytics_DB
-      Engine: !Ref DBEngine
+      Engine: MySQL
       MasterUsername: !Ref DBUsername
       MasterUserPassword: !Ref DBPassword
       MultiAZ: 'true'
