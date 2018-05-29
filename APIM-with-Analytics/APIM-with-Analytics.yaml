@@ -668,7 +668,7 @@ Resources:
               /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs
             - apt-get install -y python3-pip
             - pip3 install boto3
-            - !Sub "PRIVATE_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMAnalyticsInstance1)"
+            - !Sub "PRIVATE_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMAnalyticsInstance2)"
             - !Join
               - ''
               - - sed -i "s/CF_ANALYTICS_IP/
@@ -1222,7 +1222,7 @@ Mappings:
     eu-west-2:
       Ubuntu140464bit: ami-to-be-added
     us-east-1:
-      Ubuntu140464bit: ami-0e66968a1ac9a0a0d
+      Ubuntu140464bit: ami-0d59c6b1c40ca2993
     us-east-2:
       Ubuntu140464bit: ami-to-be-added
     us-west-1:
