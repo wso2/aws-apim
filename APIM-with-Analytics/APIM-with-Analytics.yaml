@@ -303,7 +303,10 @@ Resources:
     Properties:
       DisableApiTermination: 'false'
       InstanceInitiatedShutdownBehavior: stop
-      ImageId: ami-075f715f2a2357254
+      ImageId: !FindInMap
+        - WSO2APIMAMIRegionMap
+        - !Ref 'AWS::Region'
+        - Ubuntu140464bit
       InstanceType: t2.micro
       KeyName: !Ref KeyPairName
       Monitoring: 'false'
@@ -322,7 +325,10 @@ Resources:
     Properties:
       DisableApiTermination: 'false'
       InstanceInitiatedShutdownBehavior: stop
-      ImageId: ami-035fc05c621b44c67
+      ImageId: !FindInMap
+        - WSO2PuppetMasterRegionMap
+        - !Ref 'AWS::Region'
+        - Ubuntu140464bit
       InstanceType: t2.medium
       KeyName: !Ref KeyPairName
       Monitoring: 'false'
@@ -425,7 +431,10 @@ Resources:
   WSO2APIMNode1LaunchConfiguration:
     Type: 'AWS::AutoScaling::LaunchConfiguration'
     Properties:
-      ImageId: ami-075f715f2a2357254
+      ImageId: !FindInMap
+        - WSO2APIMAMIRegionMap
+        - !Ref 'AWS::Region'
+        - Ubuntu140464bit
       InstanceType: t2.medium
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
@@ -563,7 +572,10 @@ Resources:
   WSO2APIMNode2LaunchConfiguration:
     Type: 'AWS::AutoScaling::LaunchConfiguration'
     Properties:
-      ImageId: ami-075f715f2a2357254
+      ImageId: !FindInMap
+        - WSO2APIMAMIRegionMap
+        - !Ref 'AWS::Region'
+        - Ubuntu140464bit
       InstanceType: t2.medium
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
@@ -656,7 +668,7 @@ Resources:
               /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs
             - apt-get install -y python3-pip
             - pip3 install boto3
-            - !Sub "PRIVATE_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMAnalyticsInstance2)"
+            - !Sub "PRIVATE_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMAnalyticsInstance1)"
             - !Join
               - ''
               - - sed -i "s/CF_ANALYTICS_IP/
@@ -731,7 +743,10 @@ Resources:
   WSO2APIMAnalyticsNode1LaunchConfiguration:
     Type: 'AWS::AutoScaling::LaunchConfiguration'
     Properties:
-      ImageId: ami-0d59c6b1c40ca2993
+      ImageId: !FindInMap
+        - WSO2APIMAnalyticsAMIRegionMap
+        - !Ref 'AWS::Region'
+        - Ubuntu140464bit
       InstanceType: t2.medium
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
@@ -815,93 +830,6 @@ Resources:
     DependsOn:
       - WSO2APIMAnalyticsLoadBalancer
       - WSO2APIMAnalyticsNode1LaunchConfiguration
-  WSO2APIMAnalyticsNode2LaunchConfiguration:
-    Type: 'AWS::AutoScaling::LaunchConfiguration'
-    Properties:
-      ImageId: ami-0d59c6b1c40ca2993
-      InstanceType: t2.medium
-      BlockDeviceMappings:
-        - DeviceName: /dev/sda1
-          Ebs:
-            VolumeSize: '20'
-            VolumeType: gp2
-            DeleteOnTermination: 'true'
-      KeyName: !Ref KeyPairName
-      SecurityGroups:
-        - !Ref WSO2APIMAnalyticsSecurityGroup
-      UserData: !Base64
-        'Fn::Join':
-          - |+
-
-          - - '#!/bin/bash'
-            - set -e
-            - 'export PATH=~/.local/bin:$PATH'
-            - apt-get update
-            - sed -i '/\[main\]/a server=puppet' /etc/puppet/puppet.conf
-            - export DB_NAME=WSO2AM_DB
-            - !Join
-              - ''
-              - - export PuppetmasterIP=
-                - !GetAtt
-                  - PuppetMaster
-                  - PrivateIp
-            - echo "${PuppetmasterIP} puppet puppetmaster" >> /etc/hosts
-            - !Sub "./home/ubuntu/set_jdk.sh ${JDK}"
-            - !Join
-              - ''
-              - - sed -i "s/CF_DB_USERNAME/
-                - !Ref DBUsername
-                - /g" /usr/local/bin/provision_db_analytics.sh
-            - !Join
-              - ''
-              - - sed -i "s/CF_DB_PASSWORD/
-                - !Ref DBPassword
-                - /g" /usr/local/bin/provision_db_analytics.sh
-            - !Join
-              - ''
-              - - sed -i "s/CF_DB_HOST/
-                - !GetAtt
-                  - WSO2APIMAnalyticsDBInstance
-                  - Endpoint.Address
-                - /g" /usr/local/bin/provision_db_analytics.sh
-            - !Join
-              - ''
-              - - sed -i "s/CF_DB_PORT/
-                - !GetAtt
-                  - WSO2APIMAnalyticsDBInstance
-                  - Endpoint.Port
-                - /g" /usr/local/bin/provision_db_analytics.sh
-            - sleep 400
-            - sudo /opt/setup.sh start
-            - sleep 30
-            - bash /usr/local/bin/provision_db_analytics.sh
-            - sleep 10
-            - /mnt/wso2am-analytics-2.2.0/bin/wso2server.sh start
-            - echo 'export HISTTIMEFORMAT="%F %T "' >> /etc/profile.d/history.sh
-            - cat /dev/null > ~/.bash_history && history -c
-    DependsOn:
-      - WSO2APIMSecurityGroup
-      - WSO2APIMAnalyticsLoadBalancer
-      - WSO2APIMVPCInternetGatewayAttachment
-      - PuppetMaster
-  WSO2APIMAnalyticsNode2AutoScalingGroup:
-    Type: 'AWS::AutoScaling::AutoScalingGroup'
-    Properties:
-      LaunchConfigurationName: !Ref WSO2APIMAnalyticsNode2LaunchConfiguration
-      DesiredCapacity: 1
-      MinSize: 1
-      MaxSize: 1
-      LoadBalancerNames:
-        - !Ref WSO2APIMAnalyticsLoadBalancer
-      VPCZoneIdentifier:
-        - !Ref WSO2APIMPrivateSubnet2
-      Tags:
-        - Key: Name
-          Value: WSO2APIMAnalyticsInstance2
-          PropagateAtLaunch: 'true'
-    DependsOn:
-      - WSO2APIMAnalyticsLoadBalancer
-      - WSO2APIMAnalyticsNode2LaunchConfiguration
   WSO2APIMLoadBalancerSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -1218,6 +1146,35 @@ Parameters:
     Description: IP address of the machine used to SSH into the bastion instance
     Type: String
 Mappings:
+  WSO2PuppetMasterRegionMap:
+    ap-northeast-1:
+      Ubuntu140464bit: ami-to-be-added
+    ap-northeast-2:
+      Ubuntu140464bit: ami-to-be-added
+    ap-south-1:
+      Ubuntu140464bit: ami-to-be-added
+    ap-southeast-1:
+      Ubuntu140464bit: ami-to-be-added
+    ap-southeast-2:
+      Ubuntu140464bit: ami-to-be-added
+    eu-central-1:
+      Ubuntu140464bit: ami-to-be-added
+    eu-west-1:
+      Ubuntu140464bit: ami-to-be-added
+    eu-west-2:
+      Ubuntu140464bit: ami-to-be-added
+    us-east-1:
+      Ubuntu140464bit: ami-035fc05c621b44c67
+    us-east-2:
+      Ubuntu140464bit: ami-to-be-added
+    us-west-1:
+      Ubuntu140464bit: ami-to-be-added
+    us-west-2:
+      Ubuntu140464bit: ami-to-be-added
+    ca-central-1:
+      Ubuntu140464bit: ami-to-be-added
+    sa-east-1:
+      Ubuntu140464bit: ami-to-be-added
   WSO2APIMAMIRegionMap:
     ap-northeast-1:
       Ubuntu140464bit: ami-to-be-added
@@ -1236,7 +1193,7 @@ Mappings:
     eu-west-2:
       Ubuntu140464bit: ami-to-be-added
     us-east-1:
-      Ubuntu140464bit: ami-0baa89a873f864ebc
+      Ubuntu140464bit: ami-075f715f2a2357254
     us-east-2:
       Ubuntu140464bit: ami-to-be-added
     us-west-1:
@@ -1265,7 +1222,7 @@ Mappings:
     eu-west-2:
       Ubuntu140464bit: ami-to-be-added
     us-east-1:
-      Ubuntu140464bit: ami-05d5422af6ca39ef5
+      Ubuntu140464bit: ami-0e66968a1ac9a0a0d
     us-east-2:
       Ubuntu140464bit: ami-to-be-added
     us-west-1:
