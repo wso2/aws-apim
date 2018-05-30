@@ -1130,7 +1130,6 @@ Parameters:
     Default: "jdk-8u144-linux-x64.tar.gz"
     Description: Target Java version
     AllowedValues:
-      - jdk-7u80-linux-x64.tar.gz
       - jdk-8u144-linux-x64.tar.gz
   DBEngine:
     Type: String
