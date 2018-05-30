@@ -1,3 +1,17 @@
+# Copyright (c) 2018, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+#
+# Licensed under the Apache License, Version 2.0 (the "License");
+# you may not use this file except in compliance with the License.
+# You may obtain a copy of the License at
+#
+# http://www.apache.org/licenses/LICENSE-2.0
+#
+# Unless required by applicable law or agreed to in writing, software
+# distributed under the License is distributed on an "AS IS" BASIS,
+# WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+# See the License for the specific language governing permissions and
+# limitations under the License.
+
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
   WSO2 API Manager deployment with WSO2 API Manager Analytics
@@ -51,8 +65,6 @@ Metadata:
         default: WUM Username
       WUMPassword:
         default: WUM Password
-      SSHIP:
-        default: IP Used to SSH into Bastion Instance
 Resources:
   # networking configurations
   WSO2APIMVPC:
@@ -510,7 +522,7 @@ Resources:
                   - WSO2APIMDBInstance
                   - Endpoint.Port
                 - /g" /usr/local/bin/provision_db_apim.sh
-            - sleep 300
+            - sleep 500
             - sudo /opt/setup.sh start
             - sleep 30
             - bash /usr/local/bin/provision_db_apim.sh
@@ -651,7 +663,7 @@ Resources:
                   - WSO2APIMDBInstance
                   - Endpoint.Port
                 - /g" /usr/local/bin/provision_db_apim.sh
-            - sleep 300
+            - sleep 500
             - sudo /opt/setup.sh start
             - sleep 30
             - bash /usr/local/bin/provision_db_apim.sh
@@ -799,7 +811,7 @@ Resources:
                   - WSO2APIMAnalyticsDBInstance
                   - Endpoint.Port
                 - /g" /usr/local/bin/provision_db_analytics.sh
-            - sleep 400
+            - sleep 500
             - sudo /opt/setup.sh start
             - sleep 30
             - bash /usr/local/bin/provision_db_analytics.sh
@@ -902,6 +914,19 @@ Resources:
           PolicyNames:
             - LBStickyPolicy
         - LoadBalancerPort: '443'
+          InstancePort: '9443'
+          Protocol: HTTPS
+          InstanceProtocol: HTTPS
+          PolicyNames:
+            - LBStickyPolicy
+          SSLCertificateId: !Join
+            - ''
+            - - 'arn:aws:iam::'
+              - !Ref 'AWS::AccountId'
+              - ':server-certificate'
+              - /
+              - !Ref CertificateName
+        - LoadBalancerPort: '9443'
           InstancePort: '9443'
           Protocol: HTTPS
           InstanceProtocol: HTTPS
@@ -1142,9 +1167,6 @@ Parameters:
     Default: wso2carbon
     MinLength: 8
     NoEcho: true
-  SSHIP:
-    Description: IP address of the machine used to SSH into the bastion instance
-    Type: String
 Mappings:
   WSO2PuppetMasterRegionMap:
     ap-northeast-1:
