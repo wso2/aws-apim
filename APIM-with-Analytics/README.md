@@ -18,4 +18,4 @@ The Cloudformation template creates the following resources in AWS.
 
 ## Deployment Pattern
 
-![deployement-diagram](images/deployment-diagram.png)
+![deployement-diagram](images/deployment.png)
