@@ -360,7 +360,6 @@ Resources:
           - |+
 
           - - '#!/bin/bash'
-            - set -e
             - 'export PATH=~/.local/bin:$PATH'
             - echo "> Set hostname to puppetmaster"
             - hostname puppetmaster
@@ -463,7 +462,6 @@ Resources:
           - |+
 
           - - '#!/bin/bash'
-            - set -e
             - 'export PATH=~/.local/bin:$PATH'
             - apt-get update
             - apt-get install -y nfs-common
@@ -604,7 +602,6 @@ Resources:
           - |+
 
           - - '#!/bin/bash'
-            - set -e
             - 'export PATH=~/.local/bin:$PATH'
             - apt-get update
             - apt-get install -y nfs-common
@@ -775,7 +772,6 @@ Resources:
           - |+
 
           - - '#!/bin/bash'
-            - set -e
             - 'export PATH=~/.local/bin:$PATH'
             - apt-get update
             - sed -i '/\[main\]/a server=puppet' /etc/puppet/puppet.conf
@@ -1205,7 +1201,7 @@ Mappings:
     eu-west-2:
       Ubuntu140464bit: ami-to-be-added
     us-east-1:
-      Ubuntu140464bit: ami-073c2167c4cd555fa
+      Ubuntu140464bit: ami-035fc05c621b44c67
     us-east-2:
       Ubuntu140464bit: ami-to-be-added
     us-west-1:
