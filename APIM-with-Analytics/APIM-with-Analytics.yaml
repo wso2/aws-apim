@@ -24,6 +24,7 @@ Metadata:
           - AWSAccessKeyId
           - AWSAccessKeySecret
           - KeyPairName
+          - WSO2InstanceType
       - Label:
           default: Network Configurations
         Parameters:
@@ -341,7 +342,7 @@ Resources:
         - WSO2PuppetMasterRegionMap
         - !Ref 'AWS::Region'
         - Ubuntu140464bit
-      InstanceType: t2.medium
+      InstanceType: !Ref WSO2InstanceType
       KeyName: !Ref KeyPairName
       Monitoring: 'false'
       Tags:
@@ -447,7 +448,7 @@ Resources:
         - WSO2APIMAMIRegionMap
         - !Ref 'AWS::Region'
         - Ubuntu140464bit
-      InstanceType: t2.medium
+      InstanceType: !Ref WSO2InstanceType
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
           Ebs:
@@ -588,7 +589,7 @@ Resources:
         - WSO2APIMAMIRegionMap
         - !Ref 'AWS::Region'
         - Ubuntu140464bit
-      InstanceType: t2.medium
+      InstanceType: !Ref WSO2InstanceType
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
           Ebs:
@@ -759,7 +760,7 @@ Resources:
         - WSO2APIMAnalyticsAMIRegionMap
         - !Ref 'AWS::Region'
         - Ubuntu140464bit
-      InstanceType: t2.medium
+      InstanceType: !Ref WSO2InstanceType
       BlockDeviceMappings:
         - DeviceName: /dev/sda1
           Ebs:
@@ -1125,6 +1126,25 @@ Parameters:
     Description: A previously uploaded certificate to use at the Load Balancer Listeners.
     Type: String
     MinLength: 1
+  WSO2InstanceType:
+    Description: EC2 instance type of the WSO2 nodes
+    Type: String
+    Default: t2.medium
+    AllowedValues:
+      - t2.nano
+      - t1.micro
+      - t2.micro
+      - t2.small
+      - t2.medium
+      - t2.large
+      - t2.xlarge
+      - t2.2xlarge
+      - m3.medium
+      - m3.large
+      - m3.xlarge
+      - m3.2xlarge
+      - m4.large
+    ConstraintDescription: Must be a valid EC2 instance type
   JDK:
     Type: String
     Default: "jdk-8u144-linux-x64.tar.gz"
@@ -1185,7 +1205,7 @@ Mappings:
     eu-west-2:
       Ubuntu140464bit: ami-to-be-added
     us-east-1:
-      Ubuntu140464bit: ami-035fc05c621b44c67
+      Ubuntu140464bit: ami-073c2167c4cd555fa
     us-east-2:
       Ubuntu140464bit: ami-to-be-added
     us-west-1:
