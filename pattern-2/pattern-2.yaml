@@ -56,11 +56,11 @@ Metadata:
       JDK:
         default: JDK Version
       WUMUsername:
-        default: WUM Username
+        default: WSO2 Username
       WUMPassword:
-        default: WUM Password
+        default: WSO2 Password
       WSO2InstanceType:
-        default: WSO2 Instance Type
+        default: EC2 Instance Type
 Resources:
   # networking configurations
   WSO2APIMVPC:
@@ -1712,10 +1712,10 @@ Parameters:
   KeyPairName:
     Description: >-
       The key pair to establish a SSH connection to the web servers. This should
-      be already created.
+      be already created
     Type: 'AWS::EC2::KeyPair::KeyName'
   CertificateName:
-    Description: A previously uploaded certificate to use at the Load Balancer Listeners.
+    Description: A previously uploaded certificate to use at the Load Balancer Listeners
     Type: String
     MinLength: 1
   WSO2InstanceType:
@@ -1743,21 +1743,19 @@ Parameters:
     Type: String
     Default: ""
     NoEcho: true
-    Description: Enter WUM user password to get the updated WSO2 products deployed. If not provided standard released pack will be deployed
+    Description: Enter WSO2 Password
   WUMUsername:
     Type: String
     Default: ""
-    Description: Enter WUM user name
+    Description: Enter WSO2 Username
   DBUsername:
-    Description: The username to be used in the WSO2 AM DB.
+    Description: The Username for the WSO2 AM Database
     Type: String
-    Default: root
     MinLength: 4
     AllowedPattern: '[A-Za-z0-9\-]+'
   DBPassword:
-    Description: The password to be used in the WSO2 AM DB.
+    Description: The Password for the WSO2 AM Database
     Type: String
-    Default: wso2carbon
     MinLength: 8
     NoEcho: true
 Mappings:
