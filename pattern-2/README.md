@@ -13,7 +13,7 @@ git clone https://github.com/wso2/aws-apim.git
 
 3. Go to [AWS CloudFormation console](https://console.aws.amazon.com/cloudformation/home) and select ``Launch Cloudformer``.
 
-4. Browse to the cloned repository and select [Pattern 1](https://github.com/wso2/aws-apim/tree/master/pattern-2) CloudFormation template and proceed with the deployment.
+4. Browse to the cloned repository and select [Pattern 2](https://github.com/wso2/aws-apim/tree/master/pattern-2) CloudFormation template and proceed with the deployment.
 
 5. Follow the on screen instructions and provide the SSH key value pair name given in step 2, Server-Certificate-Name given in step 3 and other requested information and proceed.
 
