@@ -35,7 +35,7 @@ Metadata:
           - DBUsername
           - DBPassword
       - Label:
-          default: WSO2 Subscription Credentials
+          default: WSO2 Credentials
         Parameters:
           - WUMUsername
           - WUMPassword
@@ -575,16 +575,26 @@ Resources:
             - sleep 30
             - bash /usr/local/bin/provision_db_apim.sh
             - sleep 10
-            - 'if [ ! -d "/mnt/efs/synapse-configs" ]; then'
-            - '    mkdir -p /mnt/efs/synapse-configs'
-            - '    cp -r /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs /mnt/efs/synapse-configs'
+            - 'if [ ! -d "/mnt/efs/deployment/server" ]; then'
+            - '    mkdir -p /mnt/efs/deployment/server'
+            - '    cp -r /mnt/wso2am-2.5.0/repository/deployment/server /mnt/efs/deployment'
             - fi
             - >-
               rm -rf
-              /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs
+              /mnt/wso2am-2.5.0/repository/deployment/server
             - >-
-              ln -s /mnt/efs/synapse-configs/synapse-configs
-              /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs
+              ln -s /mnt/efs/deployment/server
+              /mnt/wso2am-2.5.0/repository/deployment/server
+            - 'if [ ! -d "/mnt/efs/tenants" ]; then'
+            - '    mkdir -p /mnt/efs/tenants'
+            - '    cp -r /mnt/wso2am-2.5.0/repository/tenants /mnt/efs'
+            - fi
+            - >-
+              rm -rf
+              /mnt/wso2am-2.5.0/repository/tenants
+            - >-
+              ln -s /mnt/efs/tenants
+              /mnt/wso2am-2.5.0/repository/tenants
             - apt-get install -y python3-pip
             - pip3 install boto3
             - !Sub "PRIVATE_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMAnalyticsInstance1)"
@@ -734,16 +744,26 @@ Resources:
             - sleep 30
             - bash /usr/local/bin/provision_db_apim.sh
             - sleep 10
-            - 'if [ ! -d "/mnt/efs/synapse-configs" ]; then'
-            - '    mkdir -p /mnt/efs/synapse-configs'
-            - '    cp -r /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs /mnt/efs/synapse-configs'
+            - 'if [ ! -d "/mnt/efs/deployment/server" ]; then'
+            - '    mkdir -p /mnt/efs/deployment/server'
+            - '    cp -r /mnt/wso2am-2.5.0/repository/deployment/server /mnt/efs/deployment'
             - fi
             - >-
               rm -rf
-              /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs
+              /mnt/wso2am-2.5.0/repository/deployment/server
             - >-
-              ln -s /mnt/efs/synapse-configs/synapse-configs
-              /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs
+              ln -s /mnt/efs/deployment/server
+              /mnt/wso2am-2.5.0/repository/deployment/server
+            - 'if [ ! -d "/mnt/efs/tenants" ]; then'
+            - '    mkdir -p /mnt/efs/tenants'
+            - '    cp -r /mnt/wso2am-2.5.0/repository/tenants /mnt/efs'
+            - fi
+            - >-
+              rm -rf
+              /mnt/wso2am-2.5.0/repository/tenants
+            - >-
+              ln -s /mnt/efs/tenants
+              /mnt/wso2am-2.5.0/repository/tenants
             - apt-get install -y python3-pip
             - pip3 install boto3
             - !Sub "PRIVATE_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMAnalyticsInstance1)"
@@ -1013,16 +1033,6 @@ Resources:
             - sleep 30
             - bash /usr/local/bin/provision_db_apim.sh
             - sleep 10
-            - 'if [ ! -d "/mnt/efs/synapse-configs" ]; then'
-            - '    mkdir -p /mnt/efs/synapse-configs'
-            - '    cp -r /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs /mnt/efs/synapse-configs'
-            - fi
-            - >-
-              rm -rf
-              /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs
-            - >-
-              ln -s /mnt/efs/synapse-configs/synapse-configs
-              /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs
             - apt-get install -y python3-pip
             - pip3 install boto3
             - !Sub "PRIVATE_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMAnalyticsInstance1)"
@@ -1115,7 +1125,7 @@ Resources:
               - - export PuppetmasterIP=
                 - !GetAtt
                   - PuppetMaster
-                  - PrivateIpjdk-8u144-linux-x64.tar.gz
+                  - PrivateIp
             - echo "${PuppetmasterIP} puppet puppetmaster" >> /etc/hosts
             - !Sub "./home/ubuntu/set_jdk.sh jdk-8u144-linux-x64.tar.gz"
             - mkdir -p /mnt/efs
@@ -1170,16 +1180,6 @@ Resources:
             - sleep 30
             - bash /usr/local/bin/provision_db_apim.sh
             - sleep 10
-            - 'if [ ! -d "/mnt/efs/synapse-configs" ]; then'
-            - '    mkdir -p /mnt/efs/synapse-configs'
-            - '    cp -r /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs /mnt/efs/synapse-configs'
-            - fi
-            - >-
-              rm -rf
-              /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs
-            - >-
-              ln -s /mnt/efs/synapse-configs/synapse-configs
-              /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs
             - apt-get install -y python3-pip
             - pip3 install boto3
             - !Sub "PRIVATE_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMAnalyticsInstance1)"
