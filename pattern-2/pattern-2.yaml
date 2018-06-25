@@ -35,9 +35,8 @@ Metadata:
           - DBUsername
           - DBPassword
       - Label:
-          default: Other Configurations
+          default: WSO2 Subscription Credentials
         Parameters:
-          - JDK
           - WUMUsername
           - WUMPassword
     ParameterLabels:
@@ -50,9 +49,9 @@ Metadata:
       KeyPairName:
         default: Key Pair Name
       DBUsername:
-        default: Database Master Username
+        default: Database Username
       DBPassword:
-        default: Database Master Password
+        default: Database Password
       JDK:
         default: JDK Version
       WUMUsername:
@@ -462,7 +461,7 @@ Resources:
             - !Join
               - ''
               - - sed -i "s/JDK_VERSION/
-                - !Ref JDK
+                - 'jdk-8u144-linux-x64.tar.gz'
                 - /g" /etc/puppet/hieradata/dev/wso2/common.yaml
             - !Join
               - ''
@@ -523,7 +522,7 @@ Resources:
                   - PuppetMaster
                   - PrivateIp
             - echo "${PuppetmasterIP} puppet puppetmaster" >> /etc/hosts
-            - !Sub "./home/ubuntu/set_jdk.sh ${JDK}"
+            - !Sub "./home/ubuntu/set_jdk.sh jdk-8u144-linux-x64.tar.gz"
             - mkdir -p /mnt/efs
             - !Sub "mount -t nfs4 -o nfsvers=4.1 ${WSO2APIMEFSFileSystem}.efs.${AWS::Region}.amazonaws.com:/ /mnt/efs"
             - export DB_NAME=WSO2AM_DB
@@ -578,14 +577,14 @@ Resources:
             - sleep 10
             - 'if [ ! -d "/mnt/efs/synapse-configs" ]; then'
             - '    mkdir -p /mnt/efs/synapse-configs'
-            - '    cp -r /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs /mnt/efs/synapse-configs'
+            - '    cp -r /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs /mnt/efs/synapse-configs'
             - fi
             - >-
               rm -rf
-              /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs
+              /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs
             - >-
               ln -s /mnt/efs/synapse-configs/synapse-configs
-              /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs
+              /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs
             - apt-get install -y python3-pip
             - pip3 install boto3
             - !Sub "PRIVATE_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMAnalyticsInstance1)"
@@ -595,14 +594,14 @@ Resources:
                 - $PRIVATE_IP
                 - >-
                   /g"
-                  /mnt/wso2am-2.2.0/repository/conf/api-manager.xml
+                  /mnt/wso2am-2.5.0/repository/conf/api-manager.xml
             - !Join
               - ''
               - - sed -i "s/CF_ANALYTICS_IP/
                 - $PRIVATE_IP
                 - >-
                   /g"
-                  /mnt/wso2am-2.2.0/repository/conf/log4j.properties
+                  /mnt/wso2am-2.5.0/repository/conf/log4j.properties
             - !Sub "GATEWAY_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMGatewayInstance1)"
             - !Join
               - ''
@@ -610,7 +609,7 @@ Resources:
                 - $GATEWAY_IP
                 - >-
                   /g"
-                  /mnt/wso2am-2.2.0/repository/conf/api-manager.xml
+                  /mnt/wso2am-2.5.0/repository/conf/api-manager.xml
             - !Sub "KEYMANAGER_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMKeyManagerInstance1)"
             - !Join
               - ''
@@ -618,8 +617,8 @@ Resources:
                 - $KEYMANAGER_IP
                 - >-
                   /g"
-                  /mnt/wso2am-2.2.0/repository/conf/api-manager.xml
-            - /mnt/wso2am-2.2.0/bin/wso2server.sh start
+                  /mnt/wso2am-2.5.0/repository/conf/api-manager.xml
+            - /mnt/wso2am-2.5.0/bin/wso2server.sh start
             - echo 'export HISTTIMEFORMAT="%F %T "' >> /etc/profile.d/history.sh
             - cat /dev/null > ~/.bash_history && history -c
     DependsOn:
@@ -682,7 +681,7 @@ Resources:
                   - PuppetMaster
                   - PrivateIp
             - echo "${PuppetmasterIP} puppet puppetmaster" >> /etc/hosts
-            - !Sub "./home/ubuntu/set_jdk.sh ${JDK}"
+            - !Sub "./home/ubuntu/set_jdk.sh jdk-8u144-linux-x64.tar.gz"
             - mkdir -p /mnt/efs
             - !Sub "mount -t nfs4 -o nfsvers=4.1 ${WSO2APIMEFSFileSystem}.efs.${AWS::Region}.amazonaws.com:/ /mnt/efs"
             - export DB_NAME=WSO2AM_DB
@@ -737,14 +736,14 @@ Resources:
             - sleep 10
             - 'if [ ! -d "/mnt/efs/synapse-configs" ]; then'
             - '    mkdir -p /mnt/efs/synapse-configs'
-            - '    cp -r /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs /mnt/efs/synapse-configs'
+            - '    cp -r /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs /mnt/efs/synapse-configs'
             - fi
             - >-
               rm -rf
-              /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs
+              /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs
             - >-
               ln -s /mnt/efs/synapse-configs/synapse-configs
-              /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs
+              /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs
             - apt-get install -y python3-pip
             - pip3 install boto3
             - !Sub "PRIVATE_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMAnalyticsInstance1)"
@@ -754,14 +753,14 @@ Resources:
                 - $PRIVATE_IP
                 - >-
                   /g"
-                  /mnt/wso2am-2.2.0/repository/conf/api-manager.xml
+                  /mnt/wso2am-2.5.0/repository/conf/api-manager.xml
             - !Join
               - ''
               - - sed -i "s/CF_ANALYTICS_IP/
                 - $PRIVATE_IP
                 - >-
                   /g"
-                  /mnt/wso2am-2.2.0/repository/conf/log4j.properties
+                  /mnt/wso2am-2.5.0/repository/conf/log4j.properties
             - !Sub "GATEWAY_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMGatewayInstance1)"
             - !Join
               - ''
@@ -769,7 +768,7 @@ Resources:
                 - $GATEWAY_IP
                 - >-
                   /g"
-                  /mnt/wso2am-2.2.0/repository/conf/api-manager.xml
+                  /mnt/wso2am-2.5.0/repository/conf/api-manager.xml
             - !Sub "KEYMANAGER_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMKeyManagerInstance1)"
             - !Join
               - ''
@@ -777,8 +776,8 @@ Resources:
                 - $KEYMANAGER_IP
                 - >-
                   /g"
-                  /mnt/wso2am-2.2.0/repository/conf/api-manager.xml
-            - /mnt/wso2am-2.2.0/bin/wso2server.sh start
+                  /mnt/wso2am-2.5.0/repository/conf/api-manager.xml
+            - /mnt/wso2am-2.5.0/bin/wso2server.sh start
             - echo 'export HISTTIMEFORMAT="%F %T "' >> /etc/profile.d/history.sh
             - cat /dev/null > ~/.bash_history && history -c
     DependsOn:
@@ -871,7 +870,7 @@ Resources:
                   - PuppetMaster
                   - PrivateIp
             - echo "${PuppetmasterIP} puppet puppetmaster" >> /etc/hosts
-            - !Sub "./home/ubuntu/set_jdk.sh ${JDK}"
+            - !Sub "./home/ubuntu/set_jdk.sh jdk-8u144-linux-x64.tar.gz"
             - !Join
               - ''
               - - sed -i "s/CF_DB_USERNAME/
@@ -901,7 +900,7 @@ Resources:
             - sleep 30
             - bash /usr/local/bin/provision_db_analytics.sh
             - sleep 10
-            - /mnt/wso2am-analytics-2.2.0/bin/wso2server.sh start
+            - /mnt/wso2am-analytics-2.5.0/bin/wso2server.sh start
             - echo 'export HISTTIMEFORMAT="%F %T "' >> /etc/profile.d/history.sh
             - cat /dev/null > ~/.bash_history && history -c
     DependsOn:
@@ -961,7 +960,7 @@ Resources:
                   - PuppetMaster
                   - PrivateIp
             - echo "${PuppetmasterIP} puppet puppetmaster" >> /etc/hosts
-            - !Sub "./home/ubuntu/set_jdk.sh ${JDK}"
+            - !Sub "./home/ubuntu/set_jdk.sh jdk-8u144-linux-x64.tar.gz"
             - mkdir -p /mnt/efs
             - !Sub "mount -t nfs4 -o nfsvers=4.1 ${WSO2APIMEFSFileSystem}.efs.${AWS::Region}.amazonaws.com:/ /mnt/efs"
             - export DB_NAME=WSO2AM_DB
@@ -1016,14 +1015,14 @@ Resources:
             - sleep 10
             - 'if [ ! -d "/mnt/efs/synapse-configs" ]; then'
             - '    mkdir -p /mnt/efs/synapse-configs'
-            - '    cp -r /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs /mnt/efs/synapse-configs'
+            - '    cp -r /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs /mnt/efs/synapse-configs'
             - fi
             - >-
               rm -rf
-              /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs
+              /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs
             - >-
               ln -s /mnt/efs/synapse-configs/synapse-configs
-              /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs
+              /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs
             - apt-get install -y python3-pip
             - pip3 install boto3
             - !Sub "PRIVATE_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMAnalyticsInstance1)"
@@ -1033,14 +1032,14 @@ Resources:
                 - $PRIVATE_IP
                 - >-
                   /g"
-                  /mnt/wso2am-2.2.0/repository/conf/api-manager.xml
+                  /mnt/wso2am-2.5.0/repository/conf/api-manager.xml
             - !Join
               - ''
               - - sed -i "s/CF_ANALYTICS_IP/
                 - $PRIVATE_IP
                 - >-
                   /g"
-                  /mnt/wso2am-2.2.0/repository/conf/log4j.properties
+                  /mnt/wso2am-2.5.0/repository/conf/log4j.properties
             - !Sub "GATEWAY_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMGatewayInstance1)"
             - !Join
               - ''
@@ -1048,7 +1047,7 @@ Resources:
                 - $GATEWAY_IP
                 - >-
                   /g"
-                  /mnt/wso2am-2.2.0/repository/conf/api-manager.xml
+                  /mnt/wso2am-2.5.0/repository/conf/api-manager.xml
             - !Sub "KEYMANAGER_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMKeyManagerInstance1)"
             - !Join
               - ''
@@ -1056,8 +1055,8 @@ Resources:
                 - $KEYMANAGER_IP
                 - >-
                   /g"
-                  /mnt/wso2am-2.2.0/repository/conf/api-manager.xml
-            - /mnt/wso2am-2.2.0/bin/wso2server.sh start
+                  /mnt/wso2am-2.5.0/repository/conf/api-manager.xml
+            - /mnt/wso2am-2.5.0/bin/wso2server.sh start
             - echo 'export HISTTIMEFORMAT="%F %T "' >> /etc/profile.d/history.sh
             - cat /dev/null > ~/.bash_history && history -c
     DependsOn:
@@ -1116,9 +1115,9 @@ Resources:
               - - export PuppetmasterIP=
                 - !GetAtt
                   - PuppetMaster
-                  - PrivateIp
+                  - PrivateIpjdk-8u144-linux-x64.tar.gz
             - echo "${PuppetmasterIP} puppet puppetmaster" >> /etc/hosts
-            - !Sub "./home/ubuntu/set_jdk.sh ${JDK}"
+            - !Sub "./home/ubuntu/set_jdk.sh jdk-8u144-linux-x64.tar.gz"
             - mkdir -p /mnt/efs
             - !Sub "mount -t nfs4 -o nfsvers=4.1 ${WSO2APIMEFSFileSystem}.efs.${AWS::Region}.amazonaws.com:/ /mnt/efs"
             - export DB_NAME=WSO2AM_DB
@@ -1173,14 +1172,14 @@ Resources:
             - sleep 10
             - 'if [ ! -d "/mnt/efs/synapse-configs" ]; then'
             - '    mkdir -p /mnt/efs/synapse-configs'
-            - '    cp -r /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs /mnt/efs/synapse-configs'
+            - '    cp -r /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs /mnt/efs/synapse-configs'
             - fi
             - >-
               rm -rf
-              /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs
+              /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs
             - >-
               ln -s /mnt/efs/synapse-configs/synapse-configs
-              /mnt/wso2am-2.2.0/repository/deployment/server/synapse-configs
+              /mnt/wso2am-2.5.0/repository/deployment/server/synapse-configs
             - apt-get install -y python3-pip
             - pip3 install boto3
             - !Sub "PRIVATE_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMAnalyticsInstance1)"
@@ -1190,14 +1189,14 @@ Resources:
                 - $PRIVATE_IP
                 - >-
                   /g"
-                  /mnt/wso2am-2.2.0/repository/conf/api-manager.xml
+                  /mnt/wso2am-2.5.0/repository/conf/api-manager.xml
             - !Join
               - ''
               - - sed -i "s/CF_ANALYTICS_IP/
                 - $PRIVATE_IP
                 - >-
                   /g"
-                  /mnt/wso2am-2.2.0/repository/conf/log4j.properties
+                  /mnt/wso2am-2.5.0/repository/conf/log4j.properties
             - !Sub "GATEWAY_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMGatewayInstance1)"
             - !Join
               - ''
@@ -1205,7 +1204,7 @@ Resources:
                 - $GATEWAY_IP
                 - >-
                   /g"
-                  /mnt/wso2am-2.2.0/repository/conf/api-manager.xml
+                  /mnt/wso2am-2.5.0/repository/conf/api-manager.xml
             - !Sub "KEYMANAGER_IP=$(python3 /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMKeyManagerInstance1)"
             - !Join
               - ''
@@ -1213,8 +1212,8 @@ Resources:
                 - $KEYMANAGER_IP
                 - >-
                   /g"
-                  /mnt/wso2am-2.2.0/repository/conf/api-manager.xml
-            - /mnt/wso2am-2.2.0/bin/wso2server.sh start
+                  /mnt/wso2am-2.5.0/repository/conf/api-manager.xml
+            - /mnt/wso2am-2.5.0/bin/wso2server.sh start
             - echo 'export HISTTIMEFORMAT="%F %T "' >> /etc/profile.d/history.sh
             - cat /dev/null > ~/.bash_history && history -c
     DependsOn:
@@ -1733,12 +1732,6 @@ Parameters:
       - m3.2xlarge
       - m4.large
     ConstraintDescription: Must be a valid EC2 instance type
-  JDK:
-    Type: String
-    Default: "jdk-8u144-linux-x64.tar.gz"
-    Description: Java Version
-    AllowedValues:
-      - jdk-8u144-linux-x64.tar.gz
   WUMPassword:
     Type: String
     Default: ""
@@ -1749,100 +1742,52 @@ Parameters:
     Default: ""
     Description: Enter WSO2 Username
   DBUsername:
-    Description: The Username for the WSO2 AM Database
+    Description: Enter Username for the WSO2 AM Database
     Type: String
     MinLength: 4
     AllowedPattern: '[A-Za-z0-9\-]+'
   DBPassword:
-    Description: The Password for the WSO2 AM Database
+    Description: Enter Password for the WSO2 AM Database
     Type: String
     MinLength: 8
     NoEcho: true
 Mappings:
   WSO2PuppetMasterRegionMap:
-    ap-northeast-1:
-      Ubuntu140464bit: ami-to-be-added
-    ap-northeast-2:
-      Ubuntu140464bit: ami-to-be-added
-    ap-south-1:
-      Ubuntu140464bit: ami-to-be-added
-    ap-southeast-1:
-      Ubuntu140464bit: ami-to-be-added
     ap-southeast-2:
-      Ubuntu140464bit: ami-to-be-added
-    eu-central-1:
-      Ubuntu140464bit: ami-to-be-added
+      Ubuntu140464bit: ami-0a0075377e2fc407d
     eu-west-1:
-      Ubuntu140464bit: ami-to-be-added
-    eu-west-2:
-      Ubuntu140464bit: ami-to-be-added
+      Ubuntu140464bit: ami-0ef32aec34e07c718
     us-east-1:
-      Ubuntu140464bit: ami-0c0668badb4082eaa
+      Ubuntu140464bit: ami-008d181a63651b582
     us-east-2:
-      Ubuntu140464bit: ami-to-be-added
+      Ubuntu140464bit: ami-0148befd98fb35693
     us-west-1:
-      Ubuntu140464bit: ami-02275fcbf2eed59ea
+      Ubuntu140464bit: ami-0fe9d57d64d67a03a
     us-west-2:
-      Ubuntu140464bit: ami-to-be-added
-    ca-central-1:
-      Ubuntu140464bit: ami-to-be-added
-    sa-east-1:
-      Ubuntu140464bit: ami-to-be-added
+      Ubuntu140464bit: ami-01bbc34c5b696d065
   WSO2APIMAMIRegionMap:
-    ap-northeast-1:
-      Ubuntu140464bit: ami-to-be-added
-    ap-northeast-2:
-      Ubuntu140464bit: ami-to-be-added
-    ap-south-1:
-      Ubuntu140464bit: ami-to-be-added
-    ap-southeast-1:
-      Ubuntu140464bit: ami-to-be-added
     ap-southeast-2:
-      Ubuntu140464bit: ami-to-be-added
-    eu-central-1:
-      Ubuntu140464bit: ami-to-be-added
+      Ubuntu140464bit: ami-063fe9607e4cfdb67
     eu-west-1:
-      Ubuntu140464bit: ami-to-be-added
-    eu-west-2:
-      Ubuntu140464bit: ami-to-be-added
+      Ubuntu140464bit: ami-0b9f92fa9717f933e
     us-east-1:
-      Ubuntu140464bit: ami-027b6db48d9af3117
+      Ubuntu140464bit: ami-0f98070e4bb0a6296
     us-east-2:
-      Ubuntu140464bit: ami-to-be-added
+      Ubuntu140464bit: ami-08edd02ee7e3204ae
     us-west-1:
-      Ubuntu140464bit: ami-0cde377f42820495e
+      Ubuntu140464bit: ami-0c1c5c5eae5bd07f4
     us-west-2:
-      Ubuntu140464bit: ami-to-be-added
-    ca-central-1:
-      Ubuntu140464bit: ami-to-be-added
-    sa-east-1:
-      Ubuntu140464bit: ami-to-be-added
+      Ubuntu140464bit: ami-00dfd2c1c44ba91e8
   WSO2APIMAnalyticsAMIRegionMap:
-    ap-northeast-1:
-      Ubuntu140464bit: ami-to-be-added
-    ap-northeast-2:
-      Ubuntu140464bit: ami-to-be-added
-    ap-south-1:
-      Ubuntu140464bit: ami-to-be-added
-    ap-southeast-1:
-      Ubuntu140464bit: ami-to-be-added
     ap-southeast-2:
-      Ubuntu140464bit: ami-to-be-added
-    eu-central-1:
-      Ubuntu140464bit: ami-to-be-added
+      Ubuntu140464bit: ami-011c4b342f4cb988c
     eu-west-1:
-      Ubuntu140464bit: ami-to-be-added
-    eu-west-2:
-      Ubuntu140464bit: ami-to-be-added
+      Ubuntu140464bit: ami-0fe71c53bc8cb7800
     us-east-1:
-      Ubuntu140464bit: ami-0d59c6b1c40ca2993
+      Ubuntu140464bit: ami-0aeb8006205ecb87a
     us-east-2:
-      Ubuntu140464bit: ami-to-be-added
+      Ubuntu140464bit: ami-0e9b552f26e2d73d1
     us-west-1:
-      Ubuntu140464bit: ami-0219da03e0929e68d
+      Ubuntu140464bit: ami-097cb363b4eeed29e
     us-west-2:
-      Ubuntu140464bit: ami-to-be-added
-    ca-central-1:
-      Ubuntu140464bit: ami-to-be-added
-    sa-east-1:
-      Ubuntu140464bit: ami-to-be-added
+      Ubuntu140464bit: ami-02e64c54b064f139f
