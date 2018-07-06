@@ -6,9 +6,9 @@ The WSO2 APIM CloudFormation templates use Puppet to manage the server configura
 
 1. Puppetmaster AMI - Contains the API Manager GA distribution, WSO2 Update Manager and Puppet modules containing the configurations for APIM deployment patterns.
 
-2. APIM AMI - Includes the deployment pattern specific APIM resources to create the Puppet catalog.
+2. APIM AMI - Includes the product specific resources to create the Puppet catalog.
 
-3. APIM-Analytics AMI - Includes the deployment pattern specific APIM Analytics resources to create the Puppet catalog.
+3. APIM-Analytics AMI - Includes the product specific resources to create the Puppet catalog.
 
 First the Puppetmaster AMI would deploy and afterwards the product specific AMI's would deploy and request the necessary configurations from the Puppetmaster AMI to deploy the WSO2 API Manager.
 
