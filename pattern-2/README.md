@@ -9,16 +9,7 @@ This repository contains CloudFormation templates to deploy WSO2 API Manager Pat
 git clone https://github.com/wso2/aws-apim.git
 ```
 
-2. Go to [AWS console](https://console.aws.amazon.com/ec2/v2/home#KeyPairs:sort=keyName) and specify a key value pair for authentication in a preferred region. <br>
-Allowed regions are:<br>
-   * ap-southeast-2 (Asia Pacific (Sydney))<br>
-   * eu-west-1 (EU (Ireland))<br>
-   * us-east-1 (US East (N. Virginia))<br>
-   * us-east-2 (US East (Ohio))<br>
-   * us-west-1 (US West (N. California))<br>
-   * us-west-2 (US West (Oregon))<br>
-
-This could be used to ssh into the instances. Add a Server Certificate to AWS using ACM or IAM as explained [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_server-certs.html). This will be used at the load balancer listeners.
+2. Go to [AWS console](https://console.aws.amazon.com/ec2/v2/home#KeyPairs:sort=keyName) and specify a key value pair for authentication in **us-east-1** region. This could be used to ssh into the instances. Add a Server Certificate to AWS using ACM or IAM as explained [here](https://docs.aws.amazon.com/IAM/latest/UserGuide/id_credentials_server-certs.html). This will be used at the load balancer listeners.
 
 3. Go to [AWS CloudFormation console](https://console.aws.amazon.com/cloudformation/home) and select ``Launch Cloudformer``.
 
