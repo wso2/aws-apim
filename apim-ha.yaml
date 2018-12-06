@@ -543,11 +543,11 @@ Resources:
           cat /dev/null > ~/.bash_history && history -c
           end=$((SECONDS+600))
           while [ $SECONDS -lt $end ] ; do
-          wget --delete-after --server-response --no-check-certificate "https://localhost:9443/carbon/admin/login.jsp"
-          if [ $? -eq "0" ] ; then
-              /usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource WSO2APIMNode1AutoScalingGroup --region ${AWS::Region}
-              break
-          fi
+              wget --delete-after --server-response --no-check-certificate "https://localhost:9443/carbon/admin/login.jsp"
+              if [ $? -eq "0" ] ; then
+                  /usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource WSO2APIMNode1AutoScalingGroup --region ${AWS::Region}
+                  break
+              fi
           done
     DependsOn:
       - WSO2APIMSecurityGroup
@@ -652,11 +652,11 @@ Resources:
           cat /dev/null > ~/.bash_history && history -c
           end=$((SECONDS+600))
           while [ $SECONDS -lt $end ] ; do
-          wget --delete-after --server-response --no-check-certificate "https://localhost:9443/carbon/admin/login.jsp"
-          if [ $? -eq "0" ] ; then
-              /usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource WSO2APIMNode2AutoScalingGroup --region ${AWS::Region}
-              break
-          fi
+              wget --delete-after --server-response --no-check-certificate "https://localhost:9443/carbon/admin/login.jsp"
+              if [ $? -eq "0" ] ; then
+                  /usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource WSO2APIMNode2AutoScalingGroup --region ${AWS::Region}
+                  break
+              fi
           done
     DependsOn:
       - WSO2APIMSecurityGroup
@@ -938,6 +938,7 @@ Parameters:
     Default: 20
   ElasticSearchEndpoint:
     Type: String
+    Default: ""
   OperatingSystem:
     Type: String
     Default: Ubuntu1804
