@@ -39,7 +39,6 @@ Metadata:
           - DBAllocationStorage
           - DBInstanceType
           - CustomUserData
-          - JDK
           - ElasticSearchEndpoint
     ParameterLabels:
       AWSAccessKeyId:
@@ -60,8 +59,6 @@ Metadata:
         default: Database Storage Allocation
       DBInstanceType:
         default: Database Instance Type
-      JDK:
-        default: JDK
       CustomUserData:
         default: Custom User Data
       WUMUsername:
@@ -434,11 +431,6 @@ Resources:
               - ''
               - - export DB_PASSWORD=
                 - !Ref DBPassword
-            - !Join
-             - ''
-             - - sed -i "s/JDK_TYPE/
-               - !Ref JDK
-               - /g" /etc/puppet/code/environments/production/modules/apim260/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DB_USERNAME/
@@ -1080,12 +1072,6 @@ Parameters:
   CustomUserData:
     Type: String
     Default: "echo"
-  JDK:
-    Type: String
-    Default: "OPEN_JDK8"
-    AllowedValues:
-      - "OPEN_JDK8"
-      - "ORACLE_JDK8"
   WUMPassword:
     Type: String
     Default: ""
