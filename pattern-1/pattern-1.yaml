@@ -14,7 +14,7 @@
 
 AWSTemplateFormatVersion: 2010-09-09
 Description: >-
-  WSO2 API Manager deployment
+  WSO2 API Manager deployment with WSO2 API Manager Analytics
 Metadata:
   'AWS::CloudFormation::Interface':
     ParameterGroups:
