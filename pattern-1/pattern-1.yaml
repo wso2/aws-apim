@@ -1472,7 +1472,7 @@ Mappings:
     eu-west-1:
        Ubuntu1804: ami-0c59b30d975d6c602
     us-east-1:
-       Ubuntu1804: ami-09678743cb0a8160e
+       Ubuntu1804: ami-017bb6968f2172b8c
     us-east-2:
        Ubuntu1804: ami-0ce194fdbe44acfea
     us-west-1:
@@ -1487,8 +1487,8 @@ Mappings:
       CentOS7: ami-08137d567f9e9413e
       Ubuntu1804: ami-005de30fe41bbe8f3
     us-east-1:
-      CentOS7: ami-0903f4ad60fe4bd68
-      Ubuntu1804: ami-025672766b28e3365
+      CentOS7: ami-09d4e63ccc46083c7
+      Ubuntu1804: ami-02a2048d0e4afcd10
     us-east-2:
       CentOS7: ami-009ac95229cc07041
       Ubuntu1804: ami-0a1af21a7b34de8f7
@@ -1518,4 +1518,3 @@ Mappings:
 Conditions:
   UseSQLServerDB: !Equals [sqlserver-se, !Select [0, !Split ["_", !FindInMap [ DBEngineMap, !Ref DB, DBEngine]]]]
   UseLicensedVersion: !Or [ !Equals [sqlserver, !Select [0, !Split ["-", !FindInMap [ DBEngineMap, !Ref DB, DBEngine]]]], !Equals [oracle, !Select [0, !Split ["-", !FindInMap [ DBEngineMap, !Ref DB, DBEngine]]]] ]
-
