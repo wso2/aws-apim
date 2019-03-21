@@ -843,19 +843,6 @@ Resources:
               /opt/puppetlabs/bin/puppet agent -vt >> /var/log/puppetlog.log
           fi
           sleep 30
-          # if [ ! -d "/mnt/efs/server" ]; then
-          #     mkdir -p /mnt/efs/server
-          #     cp -r /usr/lib/wso2/wso2am/2.6.0/wso2am-2.6.0/repository/deployment/server /mnt/efs
-          # fi
-          # rm -rf  /usr/lib/wso2/wso2am/2.6.0/wso2am-2.6.0/repository/deployment/server
-          # ln -s /mnt/efs/server /usr/lib/wso2/wso2am/2.6.0/wso2am-2.6.0/repository/deployment/server
-          # if [ ! -d "/mnt/efs/tenants" ]; then
-          #     mkdir -p /mnt/efs/tenants
-          #     cp -r /usr/lib/wso2/wso2am/2.6.0/wso2am-2.6.0/repository/tenants /mnt/efs
-          # fi
-          # rm -rf /usr/lib/wso2/wso2am/2.6.0/wso2am-2.6.0/repository/tenants
-          # ln -s /mnt/efs/tenants /usr/lib/wso2/wso2am/2.6.0/wso2am-2.6.0/repository/tenants
-          # echo "${WSO2APIMEFSFileSystem}:/ /mnt/efs efs defaults,_netdev 0 0" >> /etc/fstab
           export ANALYTICS_IP=$(python /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMAnalyticsWorker)
           sed -i "s/CF_ANALYTICS_IP/$ANALYTICS_IP/g" /usr/lib/wso2/wso2am/2.6.0/wso2am-2.6.0/repository/conf/api-manager.xml
           /usr/lib/wso2/wso2am/2.6.0/wso2am-2.6.0/bin/wso2server.sh start
@@ -1007,19 +994,6 @@ Resources:
               /opt/puppetlabs/bin/puppet agent -vt >> /var/log/puppetlog.log
           fi
           sleep 30
-          # if [ ! -d "/mnt/efs/server" ]; then
-          #     mkdir -p /mnt/efs/server
-          #     cp -r /usr/lib/wso2/wso2am/2.6.0/wso2am-2.6.0/repository/deployment/server /mnt/efs
-          # fi
-          # rm -rf  /usr/lib/wso2/wso2am/2.6.0/wso2am-2.6.0/repository/deployment/server
-          # ln -s /mnt/efs/server /usr/lib/wso2/wso2am/2.6.0/wso2am-2.6.0/repository/deployment/server
-          # if [ ! -d "/mnt/efs/tenants" ]; then
-          #     mkdir -p /mnt/efs/tenants
-          #     cp -r /usr/lib/wso2/wso2am/2.6.0/wso2am-2.6.0/repository/tenants /mnt/efs
-          # fi
-          # rm -rf /usr/lib/wso2/wso2am/2.6.0/wso2am-2.6.0/repository/tenants
-          # ln -s /mnt/efs/tenants /usr/lib/wso2/wso2am/2.6.0/wso2am-2.6.0/repository/tenants
-          # echo "${WSO2APIMEFSFileSystem}:/ /mnt/efs efs defaults,_netdev 0 0" >> /etc/fstab
           export ANALYTICS_IP=$(python /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMAnalyticsWorker)
           sed -i "s/CF_ANALYTICS_IP/$ANALYTICS_IP/g" /usr/lib/wso2/wso2am/2.6.0/wso2am-2.6.0/repository/conf/api-manager.xml
           /usr/lib/wso2/wso2am/2.6.0/wso2am-2.6.0/bin/wso2server.sh start
