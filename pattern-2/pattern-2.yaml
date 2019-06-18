@@ -798,6 +798,7 @@ Resources:
           #!/bin/bash
           export PATH=~/.local/bin:$PATH
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
+              export DEBIAN_FRONTEND=noninteractive
               apt-get update
               apt install -y puppet nfs-common
               apt install -y python-pip
@@ -951,6 +952,7 @@ Resources:
           #!/bin/bash
           export PATH=~/.local/bin:$PATH
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
+              export DEBIAN_FRONTEND=noninteractive
               apt-get update
               apt install -y puppet nfs-common
               apt install -y python-pip
@@ -1330,6 +1332,7 @@ Resources:
           exec > >(tee /var/log/user-data.log|logger -t user-data -s 2>/dev/console) 2>&1
           export PATH=~/.local/bin:$PATH
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
+              export DEBIAN_FRONTEND=noninteractive
               apt-get update
               apt install -y puppet nfs-common
               apt install -y python-pip
@@ -1433,6 +1436,7 @@ Resources:
           #!/bin/bash
           export PATH=~/.local/bin:$PATH
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
+              export DEBIAN_FRONTEND=noninteractive
               apt-get update
               apt install -y puppet nfs-common
               apt install -y python-pip
@@ -1595,6 +1599,7 @@ Resources:
           #!/bin/bash
           export PATH=~/.local/bin:$PATH
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
+              export DEBIAN_FRONTEND=noninteractive
               apt-get update
               apt install -y puppet nfs-common
               apt install -y python-pip
