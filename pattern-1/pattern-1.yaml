@@ -1521,6 +1521,12 @@ Parameters:
     AllowedValues:
       - MySQL-5.6
       - MySQL-5.7
+      - Postgres-9.6
+      - Postgres-10.5
+      - Oracle-SE1-11.2
+      - Oracle-SE2-12.1
+      - SQLServer-SE-13.00
+      - SQLServer-SE-14.00
   InternalPrepareForTest:
     Type: String
     Default: "False"
@@ -1540,17 +1546,17 @@ Parameters:
 Mappings:
   WSO2PuppetMasterRegionMap:
     ap-southeast-2:
-       Ubuntu1804: ami-0cbe1a07778e9388f
+       Ubuntu1804: ami-061d283b0385f49d1
     eu-west-1:
-       Ubuntu1804: ami-04372d2547534d9e3
+       Ubuntu1804: ami-036b4296921a80b28
     us-east-1:
-       Ubuntu1804: ami-03efcbe3d9e010166
+       Ubuntu1804: ami-0d63940d5f6aa538f
     us-east-2:
-       Ubuntu1804: ami-0d21272e18418e102
+       Ubuntu1804: ami-0854de8f63c9e2108
     us-west-1:
-       Ubuntu1804: ami-0410d3e01e6a2d768
+       Ubuntu1804: ami-066fe5818126da4e7
     us-west-2:
-       Ubuntu1804: ami-009ef7bcba2eadc99
+       Ubuntu1804: ami-09e61d96c76af3dd0
   WSO2APIMAMIRegionMap:
     ap-southeast-2:
       CentOS7: ami-0211f0ecd0e693937
