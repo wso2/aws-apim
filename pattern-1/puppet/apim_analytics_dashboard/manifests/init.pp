@@ -117,11 +117,11 @@ class apim_analytics_dashboard inherits apim_analytics_dashboard::params {
   }
 
   # Copy mysql connector to the installed directory
-  file { "/usr/lib/wso2/wso2am-analytics/3.0.0/wso2am-analytics-3.0.0/lib/mysql-connector-java-5.1.41-bin.jar":
+  file { "/usr/lib/wso2/wso2am-analytics/3.0.0/wso2am-analytics-3.0.0/lib/${db_connector}":
     owner  => $user,
     group  => $user_group,
     mode   => '0754',
-    source => "puppet:///modules/installers/mysql-connector-java-5.1.41-bin.jar",
+    source => "puppet:///modules/installers/${db_connector}",
   }
 
   file { "/usr/lib/wso2/wso2am-analytics/3.0.0/wso2am-analytics-3.0.0/wso2/lib/plugins/org.wso2.analytics.apim.rest.api.proxy_3.0.0.jar":

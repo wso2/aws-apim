@@ -109,7 +109,7 @@ class apim_analytics_dashboard::params {
     $wso2_am_db_url = "jdbc:oracle:thin:@CF_RDS_URL:1521/${oracle_sid}"
     $db_driver_class_name = 'oracle.jdbc.OracleDriver'
     $db_validation_query = 'SELECT 1 FROM DUAL'
-    $db_connector = 'ojdbc8.jar'
+    $db_connector = 'ojdbc8_1.0.0.jar'
   } elsif $db_managment_system == 'sqlserver-se' {
     $db_type = 'mssql'
     $stats_db_user_name = 'CF_DB_USERNAME'
