@@ -80,7 +80,7 @@ class apim::params {
   }
 
   $api_store = {
-    url        => 'https://CF_ELB_DNS_NAME:${mgt.transport.https.port}/store',
+    url        => 'https://CF_ELB_DNS_NAME:${mgt.transport.https.port}/devportal',
     server_url => 'https://CF_ELB_DNS_NAME:${mgt.transport.https.port}${carbon.context}services/',
     username   => '${admin.username}',
     password   => '${admin.password}'
@@ -190,4 +190,3 @@ class apim::params {
     enabled => false,
   }
 }
-
