@@ -20,6 +20,8 @@ type = "<%= @wso2_am_db['type'] %>"
 url = "<%= @wso2_am_db['url'] %>"
 username = "<%= @wso2_am_db['username'] %>"
 password = "<%= @wso2_am_db['password'] %>"
+driver = "<%= @wso2_am_db['driver_class_name'] %>"
+validationQuery = "<%= @wso2_am_db['validation_query'] %>"
 
 [database.shared_db]
 type = "<%= @wso2shared_db['type'] %>"
@@ -97,4 +99,3 @@ service_url = "https://localhost:${mgt.transport.https.port}${carbon.context}ser
 # region = "<%= @aws_region %>"
 # tagKey = "cluster"
 # tagValue = "apim"
-
