@@ -28,8 +28,6 @@ Metadata:
           - CertificateName
           - DBUsername
           - DBPassword
-          - WUMUsername
-          - WUMPassword
       - Label:
           default: Advanced Configuration
         Parameters:
@@ -68,10 +66,6 @@ Metadata:
         default: Enable Test Mode
       CustomUserData:
         default: Customer User Data
-      WUMUsername:
-        default: WSO2 Username
-      WUMPassword:
-        default: WSO2 Password
       WSO2InstanceType:
         default: Instance Type
       DB:
@@ -422,7 +416,7 @@ Resources:
               - - export ProductVersion=
                 - !Ref ProductVersion
             - service puppetmaster restart
-            - !Sub "/home/ubuntu/wso2-init.sh '${WUMUsername}' '${WUMPassword}' wso2am-${ProductVersion} ${InternalPrepareForTest}"
+            - !Sub "/home/ubuntu/wso2-init.sh wso2am-${ProductVersion}"
             - !Sub "/usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource PuppetMaster --region ${AWS::Region}"
             - !Join
               - ''
@@ -593,47 +587,7 @@ Resources:
               - - sed -i "s/CF_PRODUCT_VERSION/
                 - 3.0.0
                 - /g" /usr/local/bin/provision_db_apim.sh
-            - !Join
-              - ''
-              - - sed -i "s/CF_DB_USERNAME/
-                - !Ref DBUsername
-                - /g" /usr/local/bin/provision_db_apim-analytics.sh
-            - !Join
-              - ''
-              - - sed -i "s/CF_DB_PASSWORD/
-                - !Ref DBPassword
-                - /g" /usr/local/bin/provision_db_apim-analytics.sh
-            - !Join
-              - ''
-              - - sed -i "s/CF_DB_HOST/
-                - !GetAtt
-                  - WSO2APIMDBInstance
-                  - Endpoint.Address
-                - /g" /usr/local/bin/provision_db_apim-analytics.sh
-            - !Join
-              - ''
-              - - sed -i "s/CF_DB_PORT/
-                - !GetAtt
-                  - WSO2APIMDBInstance
-                  - Endpoint.Port
-                - /g" /usr/local/bin/provision_db_apim-analytics.sh
-            - !Join
-              - ''
-              - - sed -i "s/CF_DBMS_NAME/
-                - !Select [0, !Split ["_", !FindInMap [ DBEngineMap, !Ref DB, DBEngine]]]
-                - /g" /usr/local/bin/provision_db_apim-analytics.sh
-            - !Join
-              - ''
-              - - sed -i "s/CF_DBMS_VERSION/
-                - !Select [1, !Split ["_", !FindInMap [ DBEngineMap, !Ref DB, DBEngine]]]
-                - /g" /usr/local/bin/provision_db_apim-analytics.sh
-            - !Join
-              - ''
-              - - sed -i "s/CF_PRODUCT_VERSION/
-                - 3.0.0
-                - /g" /usr/local/bin/provision_db_apim-analytics.sh
             - bash /usr/local/bin/provision_db_apim.sh
-            - bash /usr/local/bin/provision_db_apim-analytics.sh
   PuppetMasterSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
     Properties:
@@ -1473,13 +1427,6 @@ Parameters:
     Default: 3.0.0
     AllowedValues:
       - 3.0.0
-  WUMPassword:
-    Type: String
-    Default: ""
-    NoEcho: true
-  WUMUsername:
-    Type: String
-    Default: ""
   DBUsername:
     Type: String
     MinLength: 4
@@ -1546,17 +1493,17 @@ Parameters:
 Mappings:
   WSO2PuppetMasterRegionMap:
     ap-southeast-2:
-       Ubuntu1804: ami-061d283b0385f49d1
+       Ubuntu1804: ami-0778fd04fcfc3696d
     eu-west-1:
-       Ubuntu1804: ami-036b4296921a80b28
+       Ubuntu1804: ami-01b8b7038fc15106c
     us-east-1:
-       Ubuntu1804: ami-0d63940d5f6aa538f
+       Ubuntu1804: ami-0c39431062f7566be
     us-east-2:
-       Ubuntu1804: ami-0854de8f63c9e2108
+       Ubuntu1804: ami-03f110f6a0479269d
     us-west-1:
-       Ubuntu1804: ami-066fe5818126da4e7
+       Ubuntu1804: ami-03fa48f6e729139b5
     us-west-2:
-       Ubuntu1804: ami-09e61d96c76af3dd0
+       Ubuntu1804: ami-0dbaa9019f6c6e837
   WSO2APIMAMIRegionMap:
     ap-southeast-2:
       CentOS7: ami-0211f0ecd0e693937
