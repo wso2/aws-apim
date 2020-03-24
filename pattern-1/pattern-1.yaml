@@ -416,7 +416,7 @@ Resources:
               - - export ProductVersion=
                 - !Ref ProductVersion
             - service puppetmaster restart
-            - wget https://wso2-cloudformation-templates.s3.amazonaws.com/wso2-init.sh
+            - wget -O wso2-init.sh https://wso2-cloudformation-templates.s3.amazonaws.com/wso2-init.sh
             - chmod +x wso2-init.sh
             - !Sub "/home/ubuntu/wso2-init.sh wso2am-${ProductVersion}"
             - !Sub "/usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource PuppetMaster --region ${AWS::Region}"
