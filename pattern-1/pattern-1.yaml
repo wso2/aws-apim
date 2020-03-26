@@ -424,17 +424,17 @@ Resources:
               - ''
               - - sed -i "s/access-key/
                 - !Ref AWSAccessKeyId
-                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim310/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/REGION_NAME/
                 - !Ref "AWS::Region"
-                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim310/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s^secretkey^
                 - !Ref AWSAccessKeySecret
-                - ^g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+                - ^g" /etc/puppet/code/environments/production/modules/apim310/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_ELB_DNS_NAME/
@@ -443,7 +443,7 @@ Resources:
                   - DNSName
                 - >-
                   /g"
-                  /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+                  /etc/puppet/code/environments/production/modules/apim310/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_ELB_DNS_NAME/
@@ -452,73 +452,73 @@ Resources:
                   - DNSName
                 - >-
                   /g"
-                  /etc/puppet/code/environments/production/modules/apim_analytics_dashboard/manifests/params.pp
+                  /etc/puppet/code/environments/production/modules/apim_analytics_dashboard310/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DB_USERNAME/
                 - !Ref DBUsername
-                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim310/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DB_PASSWORD/
                 - !Ref DBPassword
-                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim310/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DBMS/
                 - !Select [0, !Split ["_", !FindInMap [ DBEngineMap, !Ref DB, DBEngine]]]
-                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim310/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_RDS_URL/
                 - !GetAtt
                   - WSO2APIMDBInstance
                   - Endpoint.Address
-                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim310/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DB_USERNAME/
                 - !Ref DBUsername
-                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_worker/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_worker310/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DB_PASSWORD/
                 - !Ref DBPassword
-                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_worker/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_worker310/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DBMS/
                 - !Select [0, !Split ["_", !FindInMap [ DBEngineMap, !Ref DB, DBEngine]]]
-                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_worker/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_worker310/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_RDS_URL/
                 - !GetAtt
                   - WSO2APIMDBInstance
                   - Endpoint.Address
-                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_worker/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_worker310/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DB_USERNAME/
                 - !Ref DBUsername
-                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_dashboard/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_dashboard310/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DB_PASSWORD/
                 - !Ref DBPassword
-                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_dashboard/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_dashboard310/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DBMS/
                 - !Select [0, !Split ["_", !FindInMap [ DBEngineMap, !Ref DB, DBEngine]]]
-                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_dashboard/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_dashboard310/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_RDS_URL/
                 - !GetAtt
                   - WSO2APIMDBInstance
                   - Endpoint.Address
-                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_dashboard/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_dashboard310/manifests/params.pp
             - export DB_NAME=WSO2AMDB
             - !Join
               - ''
@@ -544,12 +544,12 @@ Resources:
              - ''
              - - sed -i "s/JDK_TYPE/
                - !Ref JDK
-               - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+               - /g" /etc/puppet/code/environments/production/modules/apim310/manifests/params.pp
             - !Join
              - ''
              - - sed -i "s/JDK_TYPE/
                - !Ref JDK
-               - /g" /etc/puppet/code/environments/production/modules/apim_analytics_worker/manifests/params.pp
+               - /g" /etc/puppet/code/environments/production/modules/apim_analytics_worker310/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DB_USERNAME/
@@ -587,7 +587,7 @@ Resources:
             - !Join
               - ''
               - - sed -i "s/CF_PRODUCT_VERSION/
-                - 3.0.0
+                - 3.1.0
                 - /g" /usr/local/bin/provision_db_apim.sh
             - bash /usr/local/bin/provision_db_apim.sh
   PuppetMasterSecurityGroup:
@@ -671,8 +671,8 @@ Resources:
           wget https://s3.amazonaws.com/wso2logarchiever/log_archiver/log_archiver.sh
           wget --no-check-certificate --no-proxy 'http://wso2-cloudformation-templates.s3.amazonaws.com/private_ip_extractor.py' -P /usr/local/bin/
           mv log_archiver.sh /usr/lib/
-          export ProductVersion=3.0.0
-          sed -i "s/Product_Version/3.0.0/g" /usr/lib/logstash-6.5.1/logstash-APIM.conf
+          export ProductVersion=3.1.0
+          sed -i "s/Product_Version/3.1.0/g" /usr/lib/logstash-6.5.1/logstash-APIM.conf
           sed -i "s^secret-key^${AWSAccessKeySecret}^g" /usr/lib/logstash-6.5.1/logstash-APIM.conf
           sed -i "s/access-key/${AWSAccessKeyId}/g" /usr/lib/logstash-6.5.1/logstash-APIM.conf
           sed -i "s^ELASTICSEARCH_ENDPOINT^${ElasticSearchEndpoint}^g" /usr/lib/logstash-6.5.1/logstash-APIM.conf
@@ -689,7 +689,7 @@ Resources:
           mkdir -p /mnt/efs
           mount -t nfs4 -o nfsvers=4.1 ${WSO2APIMEFSFileSystem}.efs.${AWS::Region}.amazonaws.com:/ /mnt/efs
           sleep 100
-          export FACTER_profile=apim
+          export FACTER_profile=apim310
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
               puppet agent -vt >> /var/log/puppetlog.log
           fi
@@ -699,20 +699,20 @@ Resources:
           sleep 30
           if [ ! -d "/mnt/efs/synapse-configs" ]; then
               mkdir -p /mnt/efs/synapse-configs
-              cp -r /usr/lib/wso2/wso2am/3.0.0/wso2am-3.0.0/repository/deployment/server/synapse-configs /mnt/efs
+              cp -r /usr/lib/wso2/wso2am/3.1.0/wso2am-3.1.0/repository/deployment/server/synapse-configs /mnt/efs
           fi
-          rm -rf  /usr/lib/wso2/wso2am/3.0.0/wso2am-3.0.0/repository/deployment/server/synapse-configs
-          ln -s /mnt/efs/synapse-configs /usr/lib/wso2/wso2am/3.0.0/wso2am-3.0.0/repository/deployment/server/synapse-configs
+          rm -rf  /usr/lib/wso2/wso2am/3.1.0/wso2am-3.1.0/repository/deployment/server/synapse-configs
+          ln -s /mnt/efs/synapse-configs /usr/lib/wso2/wso2am/3.1.0/wso2am-3.1.0/repository/deployment/server/synapse-configs
           if [ ! -d "/mnt/efs/tenants" ]; then
               mkdir -p /mnt/efs/tenants
-              cp -r /usr/lib/wso2/wso2am/3.0.0/wso2am-3.0.0/repository/tenants /mnt/efs
+              cp -r /usr/lib/wso2/wso2am/3.1.0/wso2am-3.1.0/repository/tenants /mnt/efs
           fi
-          rm -rf /usr/lib/wso2/wso2am/3.0.0/wso2am-3.0.0/repository/tenants
-          ln -s /mnt/efs/tenants /usr/lib/wso2/wso2am/3.0.0/wso2am-3.0.0/repository/tenants
+          rm -rf /usr/lib/wso2/wso2am/3.1.0/wso2am-3.1.0/repository/tenants
+          ln -s /mnt/efs/tenants /usr/lib/wso2/wso2am/3.1.0/wso2am-3.1.0/repository/tenants
           echo "${WSO2APIMEFSFileSystem}:/ /mnt/efs efs defaults,_netdev 0 0" >> /etc/fstab
           export ANALYTICS_IP=$(python /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMAnalyticsWorker)
-          sed -i "s/CF_ANALYTICS_IP/$ANALYTICS_IP/g" /usr/lib/wso2/wso2am/3.0.0/wso2am-3.0.0/repository/conf/deployment.toml
-          /usr/lib/wso2/wso2am/3.0.0/wso2am-3.0.0/bin/wso2server.sh start
+          sed -i "s/CF_ANALYTICS_IP/$ANALYTICS_IP/g" /usr/lib/wso2/wso2am/3.1.0/wso2am-3.1.0/repository/conf/deployment.toml
+          /usr/lib/wso2/wso2am/3.1.0/wso2am-3.1.0/bin/wso2server.sh start
           ${CustomUserData}
           sleep 30
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
@@ -1125,7 +1125,7 @@ Resources:
           export PuppetmasterIP=${PuppetMaster.PrivateIp}
           echo "$PuppetmasterIP puppet puppetmaster" >> /etc/hosts
           sleep 150
-          export FACTER_profile=apim_analytics_worker
+          export FACTER_profile=apim_analytics_worker310
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
               puppet agent -vt >> /var/log/puppetlog.log
           fi
@@ -1133,7 +1133,7 @@ Resources:
               /opt/puppetlabs/bin/puppet agent -vt >> /var/log/puppetlog.log
           fi
           sleep 30
-          /usr/lib/wso2/wso2am-analytics/3.0.0/wso2am-analytics-3.0.0/bin/worker.sh start
+          /usr/lib/wso2/wso2am-analytics/3.1.0/wso2am-analytics-3.1.0/bin/worker.sh start
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
               /usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource WSO2APIMAnalyticsNode1AutoScalingGroup --region ${AWS::Region}
           fi
@@ -1231,7 +1231,7 @@ Resources:
           export PuppetmasterIP=${PuppetMaster.PrivateIp}
           echo "$PuppetmasterIP puppet puppetmaster" >> /etc/hosts
           sleep 150
-          export FACTER_profile=apim_analytics_dashboard
+          export FACTER_profile=apim_analytics_dashboard310
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
               puppet agent -vt >> /var/log/puppetlog.log
           fi
@@ -1247,8 +1247,8 @@ Resources:
           wget https://wso2-cloudformation-templates.s3.amazonaws.com/certificate_extractor.py
           sed -i "s/CERTIFICATE_NAME/${CertificateName}/g" /home/ubuntu/certificate_extractor.py
           python certificate_extractor.py
-          keytool -noprompt -import -trustcacerts -keystore /usr/lib/wso2/wso2am-analytics/3.0.0/wso2am-analytics-3.0.0/resources/security/client-truststore.jks -file certificate.crt -keypass wso2carbon -storepass wso2carbon -alias ssl-cert
-          /usr/lib/wso2/wso2am-analytics/3.0.0/wso2am-analytics-3.0.0/bin/dashboard.sh start
+          keytool -noprompt -import -trustcacerts -keystore /usr/lib/wso2/wso2am-analytics/3.1.0/wso2am-analytics-3.1.0/resources/security/client-truststore.jks -file certificate.crt -keypass wso2carbon -storepass wso2carbon -alias ssl-cert
+          /usr/lib/wso2/wso2am-analytics/3.1.0/wso2am-analytics-3.1.0/bin/dashboard.sh start
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
               /usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource WSO2APIMAnalyticsDashboardAutoScalingGroup --region ${AWS::Region}
           fi
@@ -1426,9 +1426,9 @@ Parameters:
       - "ORACLE_JDK8"
   ProductVersion:
     Type: String
-    Default: 3.0.0
+    Default: 3.1.0
     AllowedValues:
-      - 3.0.0
+      - 3.1.0
   DBUsername:
     Type: String
     MinLength: 4
