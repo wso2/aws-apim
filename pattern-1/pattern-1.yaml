@@ -416,6 +416,7 @@ Resources:
               - - export ProductVersion=
                 - !Ref ProductVersion
             - service puppetmaster restart
+            - cd /home/ubuntu/
             - wget -O wso2-init.sh https://wso2-cloudformation-templates.s3.amazonaws.com/wso2-init.sh
             - chmod +x wso2-init.sh
             - !Sub "/home/ubuntu/wso2-init.sh wso2am-${ProductVersion}"
