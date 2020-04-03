@@ -425,17 +425,17 @@ Resources:
               - ''
               - - sed -i "s/access-key/
                 - !Ref AWSAccessKeyId
-                - /g" /etc/puppet/code/environments/production/modules/apim310/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/REGION_NAME/
                 - !Ref "AWS::Region"
-                - /g" /etc/puppet/code/environments/production/modules/apim310/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s^secretkey^
                 - !Ref AWSAccessKeySecret
-                - ^g" /etc/puppet/code/environments/production/modules/apim310/manifests/params.pp
+                - ^g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_ELB_DNS_NAME/
@@ -444,7 +444,7 @@ Resources:
                   - DNSName
                 - >-
                   /g"
-                  /etc/puppet/code/environments/production/modules/apim310/manifests/params.pp
+                  /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_ELB_DNS_NAME/
@@ -453,73 +453,73 @@ Resources:
                   - DNSName
                 - >-
                   /g"
-                  /etc/puppet/code/environments/production/modules/apim_analytics_dashboard310/manifests/params.pp
+                  /etc/puppet/code/environments/production/modules/apim_analytics_dashboard/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DB_USERNAME/
                 - !Ref DBUsername
-                - /g" /etc/puppet/code/environments/production/modules/apim310/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DB_PASSWORD/
                 - !Ref DBPassword
-                - /g" /etc/puppet/code/environments/production/modules/apim310/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DBMS/
                 - !Select [0, !Split ["_", !FindInMap [ DBEngineMap, !Ref DB, DBEngine]]]
-                - /g" /etc/puppet/code/environments/production/modules/apim310/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_RDS_URL/
                 - !GetAtt
                   - WSO2APIMDBInstance
                   - Endpoint.Address
-                - /g" /etc/puppet/code/environments/production/modules/apim310/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DB_USERNAME/
                 - !Ref DBUsername
-                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_worker310/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_worker/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DB_PASSWORD/
                 - !Ref DBPassword
-                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_worker310/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_worker/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DBMS/
                 - !Select [0, !Split ["_", !FindInMap [ DBEngineMap, !Ref DB, DBEngine]]]
-                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_worker310/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_worker/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_RDS_URL/
                 - !GetAtt
                   - WSO2APIMDBInstance
                   - Endpoint.Address
-                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_worker310/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_worker/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DB_USERNAME/
                 - !Ref DBUsername
-                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_dashboard310/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_dashboard/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DB_PASSWORD/
                 - !Ref DBPassword
-                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_dashboard310/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_dashboard/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DBMS/
                 - !Select [0, !Split ["_", !FindInMap [ DBEngineMap, !Ref DB, DBEngine]]]
-                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_dashboard310/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_dashboard/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_RDS_URL/
                 - !GetAtt
                   - WSO2APIMDBInstance
                   - Endpoint.Address
-                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_dashboard310/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_dashboard/manifests/params.pp
             - export DB_NAME=WSO2AMDB
             - !Join
               - ''
@@ -545,12 +545,12 @@ Resources:
              - ''
              - - sed -i "s/JDK_TYPE/
                - !Ref JDK
-               - /g" /etc/puppet/code/environments/production/modules/apim310/manifests/params.pp
+               - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
             - !Join
              - ''
              - - sed -i "s/JDK_TYPE/
                - !Ref JDK
-               - /g" /etc/puppet/code/environments/production/modules/apim_analytics_worker310/manifests/params.pp
+               - /g" /etc/puppet/code/environments/production/modules/apim_analytics_worker/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DB_USERNAME/
@@ -690,7 +690,7 @@ Resources:
           mkdir -p /mnt/efs
           mount -t nfs4 -o nfsvers=4.1 ${WSO2APIMEFSFileSystem}.efs.${AWS::Region}.amazonaws.com:/ /mnt/efs
           sleep 100
-          export FACTER_profile=apim310
+          export FACTER_profile=apim
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
               puppet agent -vt >> /var/log/puppetlog.log
           fi
@@ -1126,7 +1126,7 @@ Resources:
           export PuppetmasterIP=${PuppetMaster.PrivateIp}
           echo "$PuppetmasterIP puppet puppetmaster" >> /etc/hosts
           sleep 150
-          export FACTER_profile=apim_analytics_worker310
+          export FACTER_profile=apim_analytics_worker
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
               puppet agent -vt >> /var/log/puppetlog.log
           fi
@@ -1232,7 +1232,7 @@ Resources:
           export PuppetmasterIP=${PuppetMaster.PrivateIp}
           echo "$PuppetmasterIP puppet puppetmaster" >> /etc/hosts
           sleep 150
-          export FACTER_profile=apim_analytics_dashboard310
+          export FACTER_profile=apim_analytics_dashboard
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
               puppet agent -vt >> /var/log/puppetlog.log
           fi
