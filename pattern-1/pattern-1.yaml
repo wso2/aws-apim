@@ -420,6 +420,7 @@ Resources:
             - wget -O wso2-init.sh https://wso2-cloudformation-templates.s3.amazonaws.com/wso2-init.sh
             - chmod +x wso2-init.sh
             - !Sub "/home/ubuntu/wso2-init.sh wso2am-${ProductVersion}"
+            - !Sub "/home/ubuntu/wso2-init.sh wso2am-analytics-${ProductVersion}"
             - !Sub "/usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource PuppetMaster --region ${AWS::Region}"
             - !Join
               - ''
@@ -551,6 +552,11 @@ Resources:
              - - sed -i "s/JDK_TYPE/
                - !Ref JDK
                - /g" /etc/puppet/code/environments/production/modules/apim_analytics_worker/manifests/params.pp
+            - !Join
+             - ''
+             - - sed -i "s/JDK_TYPE/
+               - !Ref JDK
+               - /g" /etc/puppet/code/environments/production/modules/apim_analytics_dashboard/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DB_USERNAME/
@@ -812,13 +818,13 @@ Resources:
           ToPort: '4000'
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
-          FromPort: '9643'
-          ToPort: '9643'
+          FromPort: '9646'
+          ToPort: '9646'
           CidrIp: 0.0.0.0/0
       SecurityGroupEgress:
         - IpProtocol: tcp
-          FromPort: '9643'
-          ToPort: '9643'
+          FromPort: '9646'
+          ToPort: '9646'
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: '9763'
@@ -912,11 +918,11 @@ Resources:
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 4
       HealthCheckPath: /analytics-dashboard
-      HealthCheckPort: 9643
+      HealthCheckPort: 9646
       Matcher:
         HttpCode: 200
-      Name: apim-carbon-9643
-      Port: 9643
+      Name: apim-carbon-9646
+      Port: 9646
       Protocol: HTTPS
       TargetGroupAttributes:
       - Key: deregistration_delay.timeout_seconds
@@ -964,7 +970,7 @@ Resources:
             - /
             - !Ref CertificateName
       LoadBalancerArn: !Ref WSO2APIMLoadBalancer
-      Port: 9643
+      Port: 9646
       Protocol: HTTPS
       SslPolicy: ELBSecurityPolicy-TLS-1-1-2017-01
     DependsOn:
@@ -1041,8 +1047,8 @@ Resources:
           ToPort: '9613'
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
-          FromPort: '9643'
-          ToPort: '9643'
+          FromPort: '9646'
+          ToPort: '9646'
           CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: '7071'
@@ -1369,7 +1375,7 @@ Outputs:
         - !GetAtt
           - WSO2APIMLoadBalancer
           - DNSName
-        - ':9643/analytics-dashboard'
+        - ':9646/analytics-dashboard'
     Description: APIM HTTP Gateway endpoint
   AnalyticsBusinessRule:
     Value: !Join
@@ -1378,7 +1384,7 @@ Outputs:
         - !GetAtt
           - WSO2APIMLoadBalancer
           - DNSName
-        - ':9643/business-rule'
+        - ':9646/business-rule'
     Description: APIM HTTP Gateway endpoint
   AnalyticsPolicies:
     Value: !Join
@@ -1387,7 +1393,7 @@ Outputs:
         - !GetAtt
           - WSO2APIMLoadBalancer
           - DNSName
-        - ':9643/policies'
+        - ':9646/policies'
     Description: APIM HTTP Gateway endpoint
 Parameters:
   AWSAccessKeyId:
@@ -1496,19 +1502,19 @@ Parameters:
 Mappings:
   WSO2PuppetMasterRegionMap:
     ap-southeast-2:
-       Ubuntu1804: ami-090a89e59fa21da73
+       Ubuntu1804: ami-09dabe491ff64e262
     eu-west-1:
-       Ubuntu1804: ami-07bd2fb1d48931f12
+       Ubuntu1804: ami-05eb2ce170a010756
     eu-west-2:
-       Ubuntu1804: ami-0d8d7c2a1276656d8
+       Ubuntu1804: ami-0c83c3a26d88c04ef
     us-east-1:
-       Ubuntu1804: ami-05966f62c3c4ca982
+       Ubuntu1804: ami-07a20bea3ca6ad8f3
     us-east-2:
-       Ubuntu1804: ami-04232266307a33d79
+       Ubuntu1804: ami-0ceecada4e2696b1f
     us-west-1:
-       Ubuntu1804: ami-055027ce0cbcddd7b
+       Ubuntu1804: ami-0d955ab101db85f01
     us-west-2:
-       Ubuntu1804: ami-0dd690b34d45d8d56
+       Ubuntu1804: ami-08370f8b3d5303b49
   WSO2APIMAMIRegionMap:
     ap-southeast-2:
       CentOS7: ami-0211f0ecd0e693937
