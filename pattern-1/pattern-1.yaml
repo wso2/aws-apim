@@ -1518,7 +1518,7 @@ Mappings:
   WSO2APIMAMIRegionMap:
     ap-southeast-2:
       CentOS7: ami-0211f0ecd0e693937
-      Ubuntu1804: ami-0fc37bfc486b80d6d
+      Ubuntu1804: ami-004b3c8a774600c79
     eu-west-1:
       CentOS7: ami-08137d567f9e9413e
       Ubuntu1804: ami-005de30fe41bbe8f3
