@@ -28,6 +28,7 @@ Metadata:
           - DB
           - DBAllocationStorage
           - DBInstanceType
+          - EnvironmentName
           - WSO2VPC
           - WSO2PrivateSubnet1
           - WSO2PrivateSubnet2
@@ -42,6 +43,8 @@ Metadata:
         default: Allocation Storage
       DBInstanceType:
         default: DB Instance Type
+      EnvironmentName:
+        default: Environment Name
       WSO2VPC:
         default: VPC ID
       WSO2PrivateSubnet1:
@@ -68,6 +71,9 @@ Resources:
       MultiAZ: 'false'
       StorageType: gp2
       DBSubnetGroupName: !Ref WSO2APIMDBSubnetGroup
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} WSO2APIMDBInstance
   WSO2APIMDBSubnetGroup:
     Type: AWS::RDS::DBSubnetGroup
     Properties:
@@ -75,6 +81,9 @@ Resources:
       SubnetIds:
         - !Ref WSO2PrivateSubnet1
         - !Ref WSO2PrivateSubnet2
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} WSO2APIMDBSubnetGroup
   WSO2APIMDBInstanceSecurityGroup:
     Type: AWS::EC2::SecurityGroup
     Properties:
@@ -97,6 +106,9 @@ Resources:
           FromPort: '1433'
           ToPort: '1433'
           CidrIp: 0.0.0.0/0
+      Tags:
+        - Key: Name
+          Value: !Sub ${EnvironmentName} WSO2APIMDBInstanceSecurityGroup
 Outputs:
   WSO2APIMDBInstanceSecurityGroup:
     Value: !Ref WSO2APIMDBInstanceSecurityGroup
@@ -151,6 +163,8 @@ Parameters:
       - Oracle-SE2-12.1
       - SQLServer-SE-13.00
       - SQLServer-SE-14.00
+  EnvironmentName:
+    Description: An environment name that is prefixed to resource names
   WSO2VPC:
     Type: AWS::EC2::VPC::Id
     Description: VPC ID of your existing Virtual Private Cloud (VPC)
@@ -164,8 +178,6 @@ Mappings:
   DBEngineMap:
     MySQL-5.7:
       DBEngine: "mysql_5.7"
-    MySQL-5.6:
-      DBEngine: "mysql_5.6"
     Postgres-9.6:
       DBEngine: "postgres_9.6"
     Postgres-10.5:
