@@ -910,6 +910,10 @@ Resources:
           FromPort: '7712'
           ToPort: '7712'
           CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '9643'
+          ToPort: '9643'
+          CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
           Value: !Sub ${EnvironmentName} WSO2APIMAnalyticsSecurityGroup
