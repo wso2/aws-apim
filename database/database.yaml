@@ -164,7 +164,9 @@ Parameters:
       - SQLServer-SE-13.00
       - SQLServer-SE-14.00
   EnvironmentName:
+    Type: String
     Description: An environment name that is prefixed to resource names
+    Default: Dev
   WSO2VPC:
     Type: AWS::EC2::VPC::Id
     Description: VPC ID of your existing Virtual Private Cloud (VPC)
