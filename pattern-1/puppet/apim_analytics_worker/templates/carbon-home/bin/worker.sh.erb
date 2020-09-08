@@ -14,7 +14,7 @@
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
 
-export JAVA_HOME="/usr/lib/wso2/wso2am-analytics/3.0.0/jdk1.8.0_192/";
+export JAVA_HOME="<%= @java_symlink %>"
 cygwin=false;
 darwin=false;
 os400=false;
@@ -55,6 +55,9 @@ PRGDIR=`dirname "$PRG"`
 [ -z "$CARBON_HOME" ] && CARBON_HOME=`cd "$PRGDIR/.." ; pwd`
 
 [ -z "$RUNTIME_HOME" ] && RUNTIME_HOME=`cd "$PRGDIR/../wso2/worker" ; pwd`
+
+# Installing jars
+java -cp "$CARBON_HOME/bin/tools/*" -Dwso2.carbon.tool="install-jars" org.wso2.carbon.tools.CarbonToolExecutor "$CARBON_HOME"
 
 ###########################################################################
 NAME=start-worker

@@ -445,6 +445,15 @@ Resources:
                 - >-
                   /g"
                   /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+              - !Join
+                - ''
+                - - sed -i "s/CF_ELB_DNS_NAME/
+                  - !GetAtt
+                    - WSO2APIMLoadBalancer
+                    - DNSName
+                  - >-
+                    /g"
+                    /etc/puppet/code/environments/production/modules/apim_common/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_ELB_DNS_NAME/
@@ -458,24 +467,24 @@ Resources:
               - ''
               - - sed -i "s/CF_DB_USERNAME/
                 - !Ref DBUsername
-                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_common/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DB_PASSWORD/
                 - !Ref DBPassword
-                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_common/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DBMS/
                 - !Select [0, !Split ["_", !FindInMap [ DBEngineMap, !Ref DB, DBEngine]]]
-                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_common/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_RDS_URL/
                 - !GetAtt
                   - WSO2APIMDBInstance
                   - Endpoint.Address
-                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_common/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DB_USERNAME/
@@ -545,7 +554,7 @@ Resources:
              - ''
              - - sed -i "s/JDK_TYPE/
                - !Ref JDK
-               - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+               - /g" /etc/puppet/code/environments/production/modules/apim_common/manifests/params.pp
             - !Join
              - ''
              - - sed -i "s/JDK_TYPE/
@@ -1240,15 +1249,6 @@ Resources:
               /opt/puppetlabs/bin/puppet agent -vt >> /var/log/puppetlog.log
           fi
           sleep 30
-          mkdir /root/.aws
-          echo "[default]" >> /root/.aws/credentials
-          echo "aws_access_key_id = ${AWSAccessKeyId}" >> /root/.aws/credentials
-          echo "aws_secret_access_key = ${AWSAccessKeySecret}" >> /root/.aws/credentials
-          cd /home/ubuntu/
-          wget https://wso2-cloudformation-templates.s3.amazonaws.com/certificate_extractor.py
-          sed -i "s/CERTIFICATE_NAME/${CertificateName}/g" /home/ubuntu/certificate_extractor.py
-          python certificate_extractor.py
-          keytool -noprompt -import -trustcacerts -keystore /usr/lib/wso2/wso2am-analytics/3.0.0/wso2am-analytics-3.0.0/resources/security/client-truststore.jks -file certificate.crt -keypass wso2carbon -storepass wso2carbon -alias ssl-cert
           /usr/lib/wso2/wso2am-analytics/3.0.0/wso2am-analytics-3.0.0/bin/dashboard.sh start
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
               /usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource WSO2APIMAnalyticsDashboardAutoScalingGroup --region ${AWS::Region}
