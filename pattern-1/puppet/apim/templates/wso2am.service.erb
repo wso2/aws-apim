@@ -3,9 +3,9 @@ Description=WSO2AM
 After=network.target
 
 [Service]
-ExecStart=<%=@install_path%>/bin/wso2server.sh start
-ExecStop=<%=@install_path%>/bin/wso2server.sh stop
-ExecRestart=<%=@install_path%>/bin/wso2server.sh restart
+ExecStart=<%=@install_path%>/bin/api-manager.sh start
+ExecStop=<%=@install_path%>/bin/api-manager.sh stop
+ExecRestart=<%=@install_path%>/bin/api-manager.sh restart
 PIDFile=<%=@install_path%>/wso2carbon.pid
 User=<%=@user%>
 Group=<%=@user_group%>

@@ -17,7 +17,7 @@
 class apim_common::params {
 
   $packages = ["unzip"]
-  $version = "3.2.0"
+  $version = "4.0.0"
 
   # Set the location the product packages should reside in (eg: "local" in the /files directory, "remote" in a remote location)
   $pack_location = "local"
@@ -73,18 +73,6 @@ class apim_common::params {
 
   # ----- Profile configs -----
   case $profile {
-    'apim_analytics_dashboard': {
-      $pack = "wso2am-analytics-${version}"
-      # $remote_pack = "<URL_TO_APIM_ANALYTICS_WORKER_PACK>"
-      $server_script_path = "${product_dir}/${pack}/bin/dashboard.sh"
-      $pid_file_path = "${product_dir}/${pack}/wso2/dashboard/runtime.pid"
-    }
-    'apim_analytics_worker': {
-      $pack = "wso2am-analytics-${version}"
-      # $remote_pack = "<URL_TO_APIM_ANALYTICS_WORKER_PACK>"
-      $server_script_path = "${product_dir}/${pack}/bin/worker.sh"
-      $pid_file_path = "${product_dir}/${pack}/wso2/worker/runtime.pid"
-    }
     'apim_gateway': {
       $pack = "wso2am-${version}"
       # $remote_pack = "<URL_TO_APIM_GATEWAY_PACK>"
@@ -144,19 +132,9 @@ class apim_common::params {
   $try_sleep = 5
 
   # ----- api-manager.xml config params -----
-  $analytics_enabled = 'true'
-  $stream_processor_username = '${admin.username}'
-  $stream_processor_password = '${admin.password}'
-  $stream_processor_rest_api_url = 'https://CF_ANALYTICS_IP:7444'
-  $stream_processor_restapi_url = 'https://CF_ANALYTICS_IP:7444'
-  $stream_processor_rest_api_username = '${admin.username}'
-  $stream_processor_rest_api_password = '${admin.password}'
-  $analytics_url_group = [
-    {
-      analytics_urls      => '"tcp://CF_ANALYTICS_IP:7612"',
-      analytics_auth_urls => '"ssl://CF_ANALYTICS_IP:7712"'
-    }
-  ]
+  $analytics_enabled = 'false'
+  $analytics_config_endpoint = 'https://localhost:8080/auth/v1'
+  $analytics_auth_token = ''  
 
   $throttle_decision_endpoints = '"tcp://tm1.local:5672","tcp://tm2.local:5672"'
   $throttling_url_group = [
@@ -172,14 +150,16 @@ class apim_common::params {
 
   $gateway_environments = [
     {
-      type                => 'hybrid',
-      name                => 'Production and Sandbox',
-      description         => 'This is a hybrid gateway that handles both production and sandbox token traffic.',
-      server_url          => 'https://localhost:${mgt.transport.https.port}${carbon.context}services/',
-      ws_endpoint         => 'ws://CF_ELB_DNS_NAME:9099',
-      wss_endpoint        => 'wss://CF_ELB_DNS_NAME:8099',
-      http_endpoint       => 'http://CF_ELB_DNS_NAME:${http.nio.port}',
-      https_endpoint      => 'https://CF_ELB_DNS_NAME:${https.nio.port}'
+      type                                    => 'hybrid',
+      name                                    => 'Default',
+      description                             => 'This is a hybrid gateway that handles both production and sandbox token traffic.',
+      server_url                              => 'https://localhost:${mgt.transport.https.port}${carbon.context}services/',
+      ws_endpoint                             => 'ws://CF_ELB_DNS_NAME:9099',
+      wss_endpoint                            => 'wss://CF_ELB_DNS_NAME:8099',
+      http_endpoint                           => 'http://CF_ELB_DNS_NAME:${http.nio.port}',
+      https_endpoint                          => 'https://CF_ELB_DNS_NAME:${https.nio.port}'
+      websub_event_receiver_http_endpoint     => "http://CF_ELB_DNS_NAME:9021"
+      websub_event_receiver_https_endpoint    => "https://CF_ELB_DNS_NAME:8021"
     }
   ]
 
@@ -202,7 +182,6 @@ class apim_common::params {
     $wso2_reg_db_url = 'jdbc:mysql://CF_RDS_URL:3306/WSO2AM_COMMON_DB?autoReconnect=true&amp;useSSL=false'
     $wso2_um_db_url = 'jdbc:mysql://CF_RDS_URL:3306/WSO2AM_COMMON_DB?autoReconnect=true&amp;useSSL=false'
     $wso2_am_db_url = 'jdbc:mysql://CF_RDS_URL:3306/WSO2AM_APIMGT_DB?autoReconnect=true&amp;useSSL=false'
-    $apim_analytics_db_url = 'jdbc:mysql://CF_RDS_URL:3306/WSO2AM_STAT_DB?autoReconnect=true&amp;useSSL=false'
     $am_db_url = 'jdbc:mysql://CF_RDS_URL:3306/AM_DB?autoReconnect=true&amp;useSSL=false'
     $db_driver_class_name = 'com.mysql.jdbc.Driver'
     $db_connector = 'mysql-connector-java-5.1.48-bin.jar'
@@ -215,7 +194,6 @@ class apim_common::params {
     $wso2_reg_db_url = "jdbc:oracle:thin:@CF_RDS_URL:1521/${oracle_sid}"
     $wso2_um_db_url = "jdbc:oracle:thin:@CF_RDS_URL:1521/${oracle_sid}"
     $wso2_am_db_url = "jdbc:oracle:thin:@CF_RDS_URL:1521/${oracle_sid}"
-    $apim_analytics_db_url = "jdbc:oracle:thin:@CF_RDS_URL:1521/${oracle_sid}"
     $am_db_url = "jdbc:oracle:thin:@CF_RDS_URL:1521/${oracle_sid}"
     $db_driver_class_name = 'oracle.jdbc.OracleDriver'
     $db_validation_query = 'SELECT 1 FROM DUAL'
@@ -228,7 +206,6 @@ class apim_common::params {
     $wso2_reg_db_url = 'jdbc:sqlserver://CF_RDS_URL:1433;databaseName=WSO2AM_COMMON_DB;SendStringParametersAsUnicode=false'
     $wso2_um_db_url = 'jdbc:sqlserver://CF_RDS_URL:1433;databaseName=WSO2AM_COMMON_DB;SendStringParametersAsUnicode=false'
     $wso2_am_db_url = 'jdbc:sqlserver://CF_RDS_URL:1433;databaseName=WSO2AM_APIMGT_DB;SendStringParametersAsUnicode=false'
-    $apim_analytics_db_url = 'jdbc:sqlserver://CF_RDS_URL:1433;databaseName=WSO2AM_STAT_DB;SendStringParametersAsUnicode=false'
     $am_db_url = 'jdbc:sqlserver://CF_RDS_URL:1433;databaseName=AM_DB;SendStringParametersAsUnicode=false'
     $db_driver_class_name = 'com.microsoft.sqlserver.jdbc.SQLServerDriver'
     $db_connector = 'mssql-jdbc-7.0.0.jre8.jar'
@@ -241,7 +218,6 @@ class apim_common::params {
     $wso2_reg_db_url = 'jdbc:postgresql://CF_RDS_URL:5432/WSO2AM_COMMON_DB'
     $wso2_um_db_url = 'jdbc:postgresql://CF_RDS_URL:5432/WSO2AM_COMMON_DB'
     $wso2_am_db_url = 'jdbc:postgresql://CF_RDS_URL:5432/WSO2AM_APIMGT_DB'
-    $apim_analytics_db_url = 'jdbc:postgresql://CF_RDS_URL:5432/WSO2AM_STAT_DB'
     $am_db_url = 'jdbc:postgresql://CF_RDS_URL:5432/AM_DB'
     $db_driver_class_name = 'org.postgresql.Driver'
     $db_connector = 'postgresql-42.2.5.jar'
@@ -265,15 +241,6 @@ class apim_common::params {
     driver_class_name => $db_driver_class_name,
     validation_query  => $db_validation_query,
   }
-
-  $apim_analytics_db = {
-    type              => $db_type,
-    url               => $apim_analytics_db_url,
-    username          => $um_db_user_name,
-    password          => $db_password,
-    driver_class_name => $db_driver_class_name,
-    validation_query  => $db_validation_query,
-  }$am_db
 
   $am_db = {
     type              => $db_type,
@@ -305,40 +272,4 @@ class apim_common::params {
   # ----- user-mgt.xml config params -----
   $admin_username = 'admin'
   $admin_password = 'admin'
-
-  # ----- Analytics config params -----
-
-  # Configuration used for the databridge communication
-  $databridge_config_worker_threads = 10
-  $databridge_config_keystore_location = '${sys:carbon.home}/resources/security/wso2carbon.jks'
-  $databridge_config_keystore_password = 'wso2carbon'
-  $binary_data_receiver_hostname = '127.0.0.1'
-  $tcp_receiver_thread_pool_size = 100
-  $ssl_receiver_thread_pool_size = 100
-
-  # Configuration of the Data Agents - to publish events through
-  $thrift_agent_trust_store = '${sys:carbon.home}/resources/security/client-truststore.jks'
-  $thrift_agent_trust_store_password = 'wso2carbon'
-  $binary_agent_trust_store = '${sys:carbon.home}/resources/security/client-truststore.jks'
-  $binary_agent_trust_store_password = 'wso2carbon'
-
-  # Secure Vault Configuration
-  $securevault_keystore_location = '${sys:carbon.home}/resources/security/securevault.jks'
-  $securevault_privatekey_alias = 'wso2carbon'
-  $securevault_secret_properties_file = '${sys:carbon.home}/conf/${sys:wso2.runtime}/secrets.properties'
-  $securevault_masterkeyreader_file = '${sys:carbon.home}/conf/${sys:wso2.runtime}/master-keys.yaml'
-
-  # Data Sources Configurations
-  $wso2_metrics_db_url = 'jdbc:h2:${sys:carbon.home}/wso2/dashboard/database/metrics;AUTO_SERVER=TRUE'
-  $wso2_metrics_db_username = 'wso2carbon'
-  $wso2_metrics_db_password = 'wso2carbon'
-  $wso2_metrics_db_driver = 'org.h2.Driver'
-  $wso2_metrics_db_test_query = 'SELECT 1'
-
-  $wso2_permissions_db_url =
-    'jdbc:h2:${sys:carbon.home}/wso2/${sys:wso2.runtime}/database/PERMISSION_DB;IFEXISTS=TRUE;DB_CLOSE_ON_EXIT=FALSE;LOCK_TIMEOUT=60000;MVCC=TRUE'
-  $wso2_permissions_db_username = 'wso2carbon'
-  $wso2_permissions_db_password = 'wso2carbon'
-  $wso2_permissions_db_driver = 'org.h2.Driver'
-  $wso2_permissions_db_test_query = 'SELECT 1'
 }

@@ -56,7 +56,7 @@ class apim inherits apim::params {
     }
   }
 
-  # Copy wso2server.sh to installed directory
+  # Copy api-manager.sh to installed directory
   file { "${carbon_home}/${start_script_template}":
     ensure  => file,
     owner   => $user,
