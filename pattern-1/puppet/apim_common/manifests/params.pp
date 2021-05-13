@@ -261,7 +261,7 @@ class apim_common::params {
   $ports_offset = 0
 
   $key_store_location = 'wso2carbon.jks'
-  $mi_key_store_location = '${sys:carbon.home}/repository/resources/security/wso2carbon.jks'
+  $mi_key_store_location = 'repository/resources/security/wso2carbon.jks'
   $key_store_password = 'wso2carbon'
   $key_store_key_alias = 'wso2carbon'
   $key_store_key_password = 'wso2carbon'
@@ -272,16 +272,11 @@ class apim_common::params {
   $internal_keystore_key_password = 'wso2carbon'
 
   $trust_store_location = 'client-truststore.jks'
-  $mi_trust_store_location = '${sys:carbon.home}/repository/resources/security/client-truststore.jks'
+  $mi_trust_store_location = 'repository/resources/security/client-truststore.jks'
   $trust_store_password = 'wso2carbon'
 
   # ----- user-mgt.xml config params -----
   $admin_username = 'admin'
   $admin_password = 'admin'
-
-  # ----- Service Catalog params -----
-  $catalog_apim_host = 'https://CF_ELB_DNS_NAME:${mgt.transport.https.port}'
-  $catalog_enable = true
-  $catalog_username = 'admin'
-  $catalog_password = 'admin'
+  
 }
