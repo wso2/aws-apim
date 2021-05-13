@@ -114,10 +114,16 @@ class apim_common::params {
       $pid_file_path = "${product_dir}/${pack}/wso2carbon.pid"
       $optimize_params = "-Dprofile=traffic-manager"
     }
+    'mi': {
+      $pack = "wso2mi-${version}"
+      # $remote_pack = "<URL_TO_MI400_PACK>"
+      $server_script_path = "${product_dir}/${pack}/bin/micro-integrator.sh"
+      $pid_file_path = "${product_dir}/${pack}/wso2carbon.pid"
+    }
     default: {
       $pack = "wso2am-${version}"
       # $remote_pack = "<URL_TO_APIM_PACK>"
-      $server_script_path = "${product_dir}/${pack}/bin/wso2server.sh"
+      $server_script_path = "${product_dir}/${pack}/bin/api-manager.sh"
       $pid_file_path = "${product_dir}/${pack}/wso2carbon.pid"
       $optimize_params = ""
     }
@@ -157,9 +163,9 @@ class apim_common::params {
       ws_endpoint                             => 'ws://CF_ELB_DNS_NAME:9099',
       wss_endpoint                            => 'wss://CF_ELB_DNS_NAME:8099',
       http_endpoint                           => 'http://CF_ELB_DNS_NAME:${http.nio.port}',
-      https_endpoint                          => 'https://CF_ELB_DNS_NAME:${https.nio.port}'
-      websub_event_receiver_http_endpoint     => "http://CF_ELB_DNS_NAME:9021"
-      websub_event_receiver_https_endpoint    => "https://CF_ELB_DNS_NAME:8021"
+      https_endpoint                          => 'https://CF_ELB_DNS_NAME:${https.nio.port}',
+      websub_event_receiver_http_endpoint     => 'http://CF_ELB_DNS_NAME:9021',
+      websub_event_receiver_https_endpoint    => 'https://CF_ELB_DNS_NAME:8021'
     }
   ]
 
@@ -255,7 +261,7 @@ class apim_common::params {
   $ports_offset = 0
 
   $key_store_location = 'wso2carbon.jks'
-  $analytics_key_store_location = '${sys:carbon.home}/resources/security/wso2carbon.jks'
+  $mi_key_store_location = '${sys:carbon.home}/repository/resources/security/wso2carbon.jks'
   $key_store_password = 'wso2carbon'
   $key_store_key_alias = 'wso2carbon'
   $key_store_key_password = 'wso2carbon'
@@ -266,10 +272,16 @@ class apim_common::params {
   $internal_keystore_key_password = 'wso2carbon'
 
   $trust_store_location = 'client-truststore.jks'
-  $analytics_trust_store_location = '${sys:carbon.home}/resources/security/client-truststore.jks'
+  $mi_trust_store_location = '${sys:carbon.home}/repository/resources/security/client-truststore.jks'
   $trust_store_password = 'wso2carbon'
 
   # ----- user-mgt.xml config params -----
   $admin_username = 'admin'
   $admin_password = 'admin'
+
+  # ----- Service Catalog params -----
+  $catalog_apim_host = 'https://CF_ELB_DNS_NAME:${mgt.transport.https.port}'
+  $catalog_enable = true
+  $catalog_username = 'admin'
+  $catalog_password = 'admin'
 }
