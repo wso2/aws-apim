@@ -13,7 +13,7 @@
 # limitations under the License.
 
 AWSTemplateFormatVersion: 2010-09-09
-Description: WSO2 API Manager deployment with WSO2 API Manager Analytics - Database
+Description: WSO2 API Manager deployment with WSO2 Micro Integrator - Database
 Metadata:
   'AWS::CloudFormation::Interface':
     ParameterGroups:
@@ -112,19 +112,19 @@ Resources:
 Outputs:
   WSO2APIMDBInstanceSecurityGroup:
     Value: !Ref WSO2APIMDBInstanceSecurityGroup
-    Description: Identity Server DB Security Group
+    Description: API Manager DB Security Group
   WSO2APIMDBSubnetGroup:
     Value: !Ref WSO2APIMDBSubnetGroup
-    Description: Identity Server DB Subnet Group
+    Description: API Manager DB Subnet Group
   WSO2APIMDBInstance:
     Value: !Ref WSO2APIMDBInstance
-    Description: Identity Server DB Instance
+    Description: API Manager DB Instance
   WSO2APIMDBInstanceEndpointAddress:
     Value: !GetAtt WSO2APIMDBInstance.Endpoint.Address
-    Description: Identity Server DB Instance Endpoint Address
+    Description: API Manager DB Instance Endpoint Address
   WSO2APIMDBInstanceEndpointPort:
     Value: !GetAtt WSO2APIMDBInstance.Endpoint.Port
-    Description: Identity Server DB Instance Endpoint Port
+    Description: API Manager DB Instance Endpoint Port
 Parameters:
   DBUsername:
     Type: String
