@@ -18,7 +18,7 @@
 # This class includes all the necessary parameters.
 class apim::params inherits apim_common::params {
 
-  $start_script_template = 'bin/wso2server.sh'
+  $start_script_template = 'bin/api-manager.sh'
   $jvmxms = '256m'
   $jvmxmx = '1024m'
 
