@@ -243,13 +243,14 @@ Resources:
             - nohup /usr/lib/logstash-6.5.1/bin/logstash -f /usr/lib/logstash-6.5.1/logstash-PUPPETMASTER.conf & >> /home/ubuntu/elastic.log
             - sed -i '/\[main\]/a dns_alt_names=puppetmaster,puppet' /etc/puppet/puppet.conf
             - sed -i '/\[master\]/a autosign=true' /etc/puppet/puppet.conf
-#            - !Join
-#              - ''
-#              - - export ProductVersion=
-#                - 4.0.0
+            - !Join
+              - ''
+              - - export ProductVersion=
+                - 4.0.0
             - service puppetmaster restart
             - cd /home/ubuntu/
-            - !Sub "./wso2-update-2.sh"
+            - !Sub "./wso2_update.sh '' '' wso2am-${ProductVersion}"
+            - !Sub "./wso2_update.sh '' '' wso2mi-${ProductVersion}"
             - !Sub "/usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource PuppetMaster --region ${AWS::Region}"
 #            - wget -O wso2-init.sh https://wso2-cloudformation-templates.s3.amazonaws.com/wso2-init.sh
 #            - chmod +x wso2-init.sh
@@ -1335,17 +1336,17 @@ Parameters:
 Mappings:
   WSO2PuppetMasterRegionMap:
     ap-southeast-2:
-       Ubuntu1804: ami-0778fd04fcfc3696d
+       Ubuntu1804: ami-04f6cbc65652c2a77
     eu-west-1:
-       Ubuntu1804: ami-01b8b7038fc15106c
+       Ubuntu1804: ami-0f04b5d5e67c2fb03
     us-east-1:
-       Ubuntu1804: ami-0c39431062f7566be
+       Ubuntu1804: ami-0293fc751808f677c
     us-east-2:
-       Ubuntu1804: ami-03f110f6a0479269d
+       Ubuntu1804: ami-02bd55b97de55fb29
     us-west-1:
-       Ubuntu1804: ami-03fa48f6e729139b5
+       Ubuntu1804: ami-05acb5717f02101fd
     us-west-2:
-       Ubuntu1804: ami-0dbaa9019f6c6e837
+       Ubuntu1804: ami-08b898503bd4801cf
   WSO2APIMAMIRegionMap:
     ap-southeast-2:
       CentOS7: ami-0211f0ecd0e693937
