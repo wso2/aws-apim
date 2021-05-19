@@ -67,6 +67,14 @@ class apim inherits apim::params {
     require => Class["apim_common"]
   }
 
+  # Copy database connector to the installed directory
+  file { "${carbon_home}/repository/components/lib/${db_connector}":
+    owner  => $user,
+    group  => $user_group,
+    mode   => '0754',
+    source => "puppet:///modules/installers/${db_connector}",
+  }
+
   /*
     Following script can be used to copy file to a given location.
     This will copy some_file to install_path -> repository.
