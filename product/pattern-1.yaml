@@ -243,14 +243,18 @@ Resources:
             - nohup /usr/lib/logstash-6.5.1/bin/logstash -f /usr/lib/logstash-6.5.1/logstash-PUPPETMASTER.conf & >> /home/ubuntu/elastic.log
             - sed -i '/\[main\]/a dns_alt_names=puppetmaster,puppet' /etc/puppet/puppet.conf
             - sed -i '/\[master\]/a autosign=true' /etc/puppet/puppet.conf
-            - !Join
-              - ''
-              - - export ProductVersion=
-                - 4.0.0
+#            - !Join
+#              - ''
+#              - - export ProductVersion=
+#                - 4.0.0
             - service puppetmaster restart
             - cd /home/ubuntu/
-            - !Sub "./wso2_update.sh '' '' wso2am-${ProductVersion}"
-            - !Sub "./wso2_update.sh '' '' wso2mi-${ProductVersion}"
+#            - !Sub "./wso2_update.sh '' '' wso2am-${ProductVersion}"
+#            - !Sub "./wso2_update.sh '' '' wso2mi-${ProductVersion}"
+            - wget -O wso2_update.sh https://s3.amazonaws.com/apim-4.0.0-cfn/wso2_update.sh
+            - chmod +x wso2_update.sh
+            - !Sub "./wso2_update.sh '' '' wso2am-4.0.0"
+            - !Sub "./wso2_update.sh '' '' wso2mi-4.0.0"
             - !Sub "/usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource PuppetMaster --region ${AWS::Region}"
 #            - wget -O wso2-init.sh https://wso2-cloudformation-templates.s3.amazonaws.com/wso2-init.sh
 #            - chmod +x wso2-init.sh
@@ -261,17 +265,17 @@ Resources:
               - ''
               - - sed -i "s/access-key/
                 - !Ref AWSAccessKeyId
-                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_common/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/REGION_NAME/
                 - !Ref "AWS::Region"
-                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_common/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s^secretkey^
                 - !Ref AWSAccessKeySecret
-                - ^g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+                - ^g" /etc/puppet/code/environments/production/modules/apim_common/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_ELB_DNS_NAME/
@@ -283,24 +287,33 @@ Resources:
                   /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
             - !Join
               - ''
+              - - sed -i "s/CF_ELB_DNS_NAME/
+                - !GetAtt
+                  - WSO2APIMLoadBalancer
+                  - DNSName
+                - >-
+                  /g"
+                  /etc/puppet/code/environments/production/modules/apim_common/manifests/params.pp
+            - !Join
+              - ''
               - - sed -i "s/CF_DB_USERNAME/
                 - !Ref DBUsername
-                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_common/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DB_PASSWORD/
                 - !Ref DBPassword
-                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_common/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DBMS/
                 - !Select [0, !Split ["_", !FindInMap [ DBEngineMap, !Ref DB, DBEngine]]]
-                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_common/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_RDS_URL/
                 - !Ref WSO2APIMDBInstanceEndpointAddress
-                - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
+                - /g" /etc/puppet/code/environments/production/modules/apim_common/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_ELB_DNS_NAME/
@@ -331,12 +344,7 @@ Resources:
              - ''
              - - sed -i "s/JDK_TYPE/
                - !Ref JDK
-               - /g" /etc/puppet/code/environments/production/modules/apim/manifests/params.pp
-            - !Join
-             - ''
-             - - sed -i "s/JDK_TYPE/
-               - !Ref JDK
-               - /g" /etc/puppet/code/environments/production/modules/mi/manifests/params.pp
+               - /g" /etc/puppet/code/environments/production/modules/apim_common/manifests/params.pp
             - !Join
               - ''
               - - sed -i "s/CF_DB_USERNAME/
@@ -512,7 +520,7 @@ Resources:
           export APIMNODE2IP=$(python /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMInstance2)
           sed -i "s/tm2.local/$APIMNODE2IP/g" /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/conf/deployment.toml
           sed -i "s/OTHERAPIMNODE/$APIMNODE2IP/g" /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/conf/deployment.toml
-          /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/bin/api-manager.sh start
+          sh /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/bin/api-manager.sh start
           ${CustomUserData}
           sleep 30
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
@@ -558,14 +566,14 @@ Resources:
         - !Ref WSO2APIMPrivateSubnet2
       Tags:
         - Key: Name
-          Value: WSO2APIMInstance1
+          Value: !Sub ${EnvironmentName} WSO2APIMInstance1
           PropagateAtLaunch: 'true'
         - Key: cluster
           Value: apim
           PropagateAtLaunch: 'true'
     CreationPolicy:
       ResourceSignal:
-        Count: 2
+        Count: 1
         Timeout: PT30M
     UpdatePolicy:
       AutoScalingRollingUpdate:
@@ -696,7 +704,7 @@ Resources:
           sed -i "s/tm2.local/$APIMNODE2IP/g" /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/conf/deployment.toml
           sed -i "s/OTHERAPIMNODE/$APIMNODE1IP/g" /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/conf/deployment.toml
           sleep 100
-          /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/bin/api-manager.sh start
+          sh /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/bin/api-manager.sh start
           ${CustomUserData}
           sleep 30
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
@@ -742,14 +750,14 @@ Resources:
         - !Ref WSO2APIMPrivateSubnet2
       Tags:
         - Key: Name
-          Value: WSO2APIMInstance2
+          Value: !Sub ${EnvironmentName} WSO2APIMInstance2
           PropagateAtLaunch: 'true'
         - Key: cluster
           Value: apim
           PropagateAtLaunch: 'true'
     CreationPolicy:
       ResourceSignal:
-        Count: 2
+        Count: 1
         Timeout: PT30M
     UpdatePolicy:
       AutoScalingRollingUpdate:
@@ -1081,11 +1089,15 @@ Resources:
               apt-get update
               apt install -y puppet nfs-common
               apt install -y python-pip
+              apt install -y python3-pip
+              pip3 install boto3
+              pip install boto3
               sed -i '/\[main\]/a server=puppet' /etc/puppet/puppet.conf
           fi
           if [[ ${OperatingSystem} == "CentOS7" ]]; then
               yum install -y epel-release zip unzip nfs-utils
               yum install -y python-pip
+              pip install boto3
               rpm -Uvh https://yum.puppetlabs.com/puppet5/puppet5-release-el-7.noarch.rpm
               yum install -y puppet-agent
               echo $'[main]\nserver = puppet\ncertname = agent3\nenvironment = production\n\runinterval = 1h' > /etc/puppetlabs/puppet/puppet.conf
@@ -1093,6 +1105,11 @@ Resources:
           pip install https://s3.amazonaws.com/cloudformation-examples/aws-cfn-bootstrap-latest.tar.gz
           export PuppetmasterIP=${PuppetMaster.PrivateIp}
           echo "$PuppetmasterIP puppet puppetmaster" >> /etc/hosts
+          export MI_HOST=${WSO2APIMLoadBalancer.DNSName}
+          export MI_PORT=8290
+          export ALBDNS=${WSO2APIMLoadBalancer.DNSName}
+          echo "127.0.0.1 $ALBDNS" >> /etc/hosts
+          service puppet restart
           sleep 150
           export FACTER_profile=mi
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
@@ -1102,7 +1119,7 @@ Resources:
               /opt/puppetlabs/bin/puppet agent -vt >> /var/log/puppetlog.log
           fi
           sleep 30
-          /usr/lib/wso2/wso2mi/4.0.0/wso2mi-4.0.0/bin/micro-integrator.sh start
+          sh /usr/lib/wso2/wso2am/4.0.0/wso2mi-4.0.0/bin/micro-integrator.sh start
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
               /usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource WSO2MINode1AutoScalingGroup --region ${AWS::Region}
           fi
@@ -1140,6 +1157,9 @@ Resources:
         SuspendProcesses:
           - AlarmNotification
         WaitOnResourceSignals: true
+    DependsOn:
+      - WSO2APIMNode1AutoScalingGroup
+      - WSO2APIMNode2AutoScalingGroup
 Outputs:
   CarbonServerUrl:
     Value: !Join
@@ -1323,7 +1343,7 @@ Parameters:
     Description: VPC ID of your existing Virtual Private Cloud (VPC)
   WSO2APIMPrivateSubnet1:
     Type: AWS::EC2::Subnet::Id
-    Description: Private Subnet for PuppetMaster, Prodcut Instance, EFS and the DB
+    Description: Private Subnet for PuppetMaster, Product Instance, EFS and the DB
   WSO2APIMPrivateSubnet2:
     Type: AWS::EC2::Subnet::Id
     Description: Private Subnet for Prodcut Instance and the DB
@@ -1336,17 +1356,17 @@ Parameters:
 Mappings:
   WSO2PuppetMasterRegionMap:
     ap-southeast-2:
-       Ubuntu1804: ami-04f6cbc65652c2a77
+       Ubuntu1804: ami-0714f5dfb52dd25ab
     eu-west-1:
-       Ubuntu1804: ami-0f04b5d5e67c2fb03
+       Ubuntu1804: ami-07cddf027086acf93
     us-east-1:
-       Ubuntu1804: ami-0293fc751808f677c
+       Ubuntu1804: ami-0909f315e6e19962e
     us-east-2:
-       Ubuntu1804: ami-02bd55b97de55fb29
+       Ubuntu1804: ami-05b68930b60ceb310
     us-west-1:
-       Ubuntu1804: ami-05acb5717f02101fd
+       Ubuntu1804: ami-0d1f1ad66b6870aa0
     us-west-2:
-       Ubuntu1804: ami-08b898503bd4801cf
+       Ubuntu1804: ami-0b47780f8e14e20b9
   WSO2APIMAMIRegionMap:
     ap-southeast-2:
       CentOS7: ami-0211f0ecd0e693937
