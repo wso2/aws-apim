@@ -23,6 +23,8 @@ Metadata:
         Parameters:
           - AWSAccessKeyId
           - AWSAccessKeySecret
+          - WUMUsername
+          - WUMPassword
           - DBUsername
           - DBPassword
           - KeyPairName
@@ -38,6 +40,10 @@ Metadata:
         default: AWS Access Key ID
       AWSAccessKeySecret:
         default: AWS Access Secret Key
+      WUMUsername:
+        default: WSO2 Username
+      WUMPassword:
+        default: WSO2 Password
       CertificateName:
         default: SSL Certificate Name
       CustomUserData:
@@ -63,6 +69,15 @@ Parameters:
 
   AWSAccessKeySecret:
     Type: String
+    NoEcho: true
+
+  WUMUsername:
+    Type: String
+    Default: ""
+  WUMPassword:
+    Type: String
+    Default: ""
+    NoEcho: true
 
   CertificateName:
     Description: A valid SSL certificate used for HTTPS
@@ -151,6 +166,8 @@ Resources:
       Parameters:
         AWSAccessKeyId: !Ref AWSAccessKeyId
         AWSAccessKeySecret: !Ref AWSAccessKeySecret
+        WUMUsername: !Ref WUMUsername
+        WUMPassword: !Ref WUMPassword
         CertificateName: !Ref CertificateName
         DBUsername: !Ref DBUsername
         DBPassword: !Ref DBPassword

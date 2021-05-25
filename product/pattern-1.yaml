@@ -1,4 +1,4 @@
-# Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+# Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -22,6 +22,8 @@ Metadata:
         Parameters:
           - AWSAccessKeyId
           - AWSAccessKeySecret
+          - WUMUsername
+          - WUMPassword
           - KeyPairName
           - WSO2InstanceType
           - CertificateName
@@ -49,6 +51,10 @@ Metadata:
         default: AWS Access Key ID
       AWSAccessKeySecret:
         default: AWS Access Secret Key
+      WUMUsername:
+        default: WSO2 Username
+      WUMPassword:
+        default: WSO2 Password
       OperatingSystem:
         default: Operating System
       CertificateName:
@@ -88,41 +94,6 @@ Metadata:
       WSO2APIMPublicSubnet2:
         default: WSO2 Public Subnet 2 - ID
 Resources:
-  # File system configurations
-  WSO2APIMEFSSecurityGroup:
-    Type: 'AWS::EC2::SecurityGroup'
-    Properties:
-      VpcId: !Ref WSO2APIMVPC
-      GroupDescription: EFS Security Group
-      SecurityGroupIngress:
-      - IpProtocol: tcp
-        FromPort: '2049'
-        ToPort: '2049'
-        CidrIp: 0.0.0.0/0
-      Tags:
-        - Key: Name
-          Value: !Sub ${EnvironmentName} WSO2APIMEFSSecurityGroup
-  WSO2APIMEFSFileSystem:
-    Type: 'AWS::EFS::FileSystem'
-    Properties:
-      PerformanceMode: generalPurpose
-      FileSystemTags:
-        - Key: Name
-          Value: !Sub ${EnvironmentName} WSO2APIMEFSFileSystem
-  WSO2APIMPrivateSubnet1EFSMountTarget:
-    Type: 'AWS::EFS::MountTarget'
-    Properties:
-      SubnetId: !Ref WSO2APIMPrivateSubnet1
-      FileSystemId: !Ref WSO2APIMEFSFileSystem
-      SecurityGroups:
-        - !Ref WSO2APIMEFSSecurityGroup
-  WSO2APIMPrivateSubnet2EFSMountTarget:
-    Type: 'AWS::EFS::MountTarget'
-    Properties:
-      SubnetId: !Ref WSO2APIMPrivateSubnet2
-      FileSystemId: !Ref WSO2APIMEFSFileSystem
-      SecurityGroups:
-        - !Ref WSO2APIMEFSSecurityGroup
   # Product configurations
   WSO2APIMSecurityGroup:
     Type: 'AWS::EC2::SecurityGroup'
@@ -161,6 +132,14 @@ Resources:
         - IpProtocol: tcp
           FromPort: '4000'
           ToPort: '4000'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '9611'
+          ToPort: '9611'
+          CidrIp: 0.0.0.0/0
+        - IpProtocol: tcp
+          FromPort: '9711'
+          ToPort: '9711'
           CidrIp: 0.0.0.0/0
       Tags:
         - Key: Name
@@ -253,14 +232,15 @@ Resources:
 #            - !Sub "./wso2_update.sh '' '' wso2mi-${ProductVersion}"
             - wget -O wso2_update.sh https://s3.amazonaws.com/apim-4.0.0-cfn/wso2_update.sh
             - chmod +x wso2_update.sh
-            - !Sub "./wso2_update.sh '' '' wso2am-4.0.0"
-            - !Sub "./wso2_update.sh '' '' wso2mi-4.0.0"
+            - !Sub
+              - ./wso2_update.sh ${Username} ${Password} wso2am-4.0.0
+              - { Username: !Ref WUMUsername }
+              - { Password: !Ref WUMPassword }
+            - !Sub
+              - ./wso2_update.sh ${Username} ${Password} wso2mi-4.0.0
+              - { Username: !Ref WUMUsername }
+              - { Password: !Ref WUMPassword }
             - !Sub "/usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource PuppetMaster --region ${AWS::Region}"
-#            - wget -O wso2-init.sh https://wso2-cloudformation-templates.s3.amazonaws.com/wso2-init.sh
-#            - chmod +x wso2-init.sh
-#            - !Sub "/home/ubuntu/wso2-init.sh wso2am-${ProductVersion}"
-#            - !Sub "/home/ubuntu/wso2-init.sh wso2am-analytics-${ProductVersion}"
-#            - !Sub "/usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource PuppetMaster --region ${AWS::Region}"
             - !Join
               - ''
               - - sed -i "s/access-key/
@@ -481,8 +461,6 @@ Resources:
           export ALBDNS=${WSO2APIMLoadBalancer.DNSName}
           echo "127.0.0.1 $ALBDNS" >> /etc/hosts
           service puppet restart
-          mkdir -p /mnt/efs
-          mount -t nfs4 -o nfsvers=4.1 ${WSO2APIMEFSFileSystem}.efs.${AWS::Region}.amazonaws.com:/ /mnt/efs
           sleep 100
           export FACTER_profile=apim
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
@@ -492,34 +470,13 @@ Resources:
               /opt/puppetlabs/bin/puppet agent -vt >> /var/log/puppetlog.log
           fi
           sleep 30
-
-          if [ ! -d "/mnt/efs/server/synapse-configs" ]; then
-              mkdir -p /mnt/efs/server/synapse-configs
-              cp -r /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/deployment/server/synapse-configs /mnt/efs
-          fi
-          rm -rf  /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/deployment/server/synapse-configs
-          ln -s /mnt/efs/server/synapse-configs /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/deployment/server
-
-          if [ ! -d "/mnt/efs/server/executionplans" ]; then
-              mkdir -p /mnt/efs/server/executionplans
-              cp -r /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/deployment/server/executionplans /mnt/efs
-          fi
-          rm -rf  /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/deployment/server/executionplans
-          ln -s /mnt/efs/server/executionplans /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/deployment/server
-
-          if [ ! -d "/mnt/efs/tenants" ]; then
-              mkdir -p /mnt/efs/tenants
-              cp -r /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/tenants /mnt/efs
-          fi
-          rm -rf /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/tenants
-          ln -s /mnt/efs/tenants /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/tenants
-          echo "${WSO2APIMEFSFileSystem}:/ /mnt/efs efs defaults,_netdev 0 0" >> /etc/fstab
           service puppet stop
           export APIMNODE1IP=$(python /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMInstance1)
           sed -i "s/tm1.local/$APIMNODE1IP/g" /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/conf/deployment.toml
           export APIMNODE2IP=$(python /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMInstance2)
           sed -i "s/tm2.local/$APIMNODE2IP/g" /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/conf/deployment.toml
           sed -i "s/OTHERAPIMNODE/$APIMNODE2IP/g" /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/conf/deployment.toml
+          sleep 100
           sh /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/bin/api-manager.sh start
           ${CustomUserData}
           sleep 30
@@ -563,10 +520,9 @@ Resources:
         - !Ref WSO2APIMALB8243TargetGroup
       VPCZoneIdentifier:
         - !Ref WSO2APIMPrivateSubnet1
-        - !Ref WSO2APIMPrivateSubnet2
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} WSO2APIMInstance1
+          Value: WSO2APIMInstance1
           PropagateAtLaunch: 'true'
         - Key: cluster
           Value: apim
@@ -664,8 +620,6 @@ Resources:
           export ALBDNS=${WSO2APIMLoadBalancer.DNSName}
           echo "127.0.0.1 $ALBDNS" >> /etc/hosts
           service puppet restart
-          mkdir -p /mnt/efs
-          mount -t nfs4 -o nfsvers=4.1 ${WSO2APIMEFSFileSystem}.efs.${AWS::Region}.amazonaws.com:/ /mnt/efs
           sleep 100
           export FACTER_profile=apim
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
@@ -676,27 +630,6 @@ Resources:
           fi
           sleep 30
 
-          if [ ! -d "/mnt/efs/server/synapse-configs" ]; then
-              mkdir -p /mnt/efs/server/synapse-configs
-              cp -r /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/deployment/server/synapse-configs /mnt/efs
-          fi
-          rm -rf  /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/deployment/server/synapse-configs
-          ln -s /mnt/efs/server/synapse-configs /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/deployment/server
-
-          if [ ! -d "/mnt/efs/server/executionplans" ]; then
-              mkdir -p /mnt/efs/server/executionplans
-              cp -r /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/deployment/server/executionplans /mnt/efs
-          fi
-          rm -rf  /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/deployment/server/executionplans
-          ln -s /mnt/efs/server/executionplans /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/deployment/server
-
-          if [ ! -d "/mnt/efs/tenants" ]; then
-              mkdir -p /mnt/efs/tenants
-              cp -r /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/tenants /mnt/efs
-          fi
-          rm -rf /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/tenants
-          ln -s /mnt/efs/tenants /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/tenants
-          echo "${WSO2APIMEFSFileSystem}:/ /mnt/efs efs defaults,_netdev 0 0" >> /etc/fstab
           service puppet stop
           export APIMNODE1IP=$(python /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMInstance1)
           sed -i "s/tm1.local/$APIMNODE1IP/g" /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/conf/deployment.toml
@@ -746,11 +679,10 @@ Resources:
         - !Ref WSO2APIMALBTargetGroup
         - !Ref WSO2APIMALB8243TargetGroup
       VPCZoneIdentifier:
-        - !Ref WSO2APIMPrivateSubnet1
         - !Ref WSO2APIMPrivateSubnet2
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} WSO2APIMInstance2
+          Value: WSO2APIMInstance2
           PropagateAtLaunch: 'true'
         - Key: cluster
           Value: apim
@@ -910,15 +842,16 @@ Resources:
     Type: AWS::ElasticLoadBalancingV2::TargetGroup
     Properties:
       HealthCheckIntervalSeconds: 10
-      HealthCheckProtocol: HTTPS
+      HealthCheckProtocol: HTTP
       HealthCheckTimeoutSeconds: 5
       HealthyThresholdCount: 4
-      HealthCheckPort: 8253
+      HealthCheckPath: /healthz
+      HealthCheckPort: 9201
       Matcher:
         HttpCode: 200
-      Name: mi-8243
-      Port: 8253
-      Protocol: HTTPS
+      Name: mi-9201
+      Port: 9201
+      Protocol: HTTP
       TargetGroupAttributes:
         - Key: deregistration_delay.timeout_seconds
           Value: '20'
@@ -1005,7 +938,7 @@ Resources:
               - /
               - !Ref CertificateName
       LoadBalancerArn: !Ref WSO2APIMLoadBalancer
-      Port: 8253
+      Port: 9201
       Protocol: HTTPS
       SslPolicy: ELBSecurityPolicy-TLS-1-1-2017-01
     DependsOn:
@@ -1107,8 +1040,6 @@ Resources:
           echo "$PuppetmasterIP puppet puppetmaster" >> /etc/hosts
           export MI_HOST=${WSO2APIMLoadBalancer.DNSName}
           export MI_PORT=8290
-          export ALBDNS=${WSO2APIMLoadBalancer.DNSName}
-          echo "127.0.0.1 $ALBDNS" >> /etc/hosts
           service puppet restart
           sleep 150
           export FACTER_profile=mi
@@ -1119,6 +1050,7 @@ Resources:
               /opt/puppetlabs/bin/puppet agent -vt >> /var/log/puppetlog.log
           fi
           sleep 30
+          service puppet stop
           sh /usr/lib/wso2/wso2am/4.0.0/wso2mi-4.0.0/bin/micro-integrator.sh start
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
               /usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource WSO2MINode1AutoScalingGroup --region ${AWS::Region}
@@ -1141,9 +1073,10 @@ Resources:
       MaxSize: 1
       VPCZoneIdentifier:
         - !Ref WSO2APIMPrivateSubnet1
+        - !Ref WSO2APIMPrivateSubnet2
       Tags:
         - Key: Name
-          Value: !Sub ${EnvironmentName} WSO2MI
+          Value: !Sub ${EnvironmentName} WSO2MIInstance
           PropagateAtLaunch: 'true'
     CreationPolicy:
       ResourceSignal:
@@ -1256,6 +1189,14 @@ Parameters:
     Type: String
   AWSAccessKeySecret:
     Type: String
+    NoEcho: true
+  WUMUsername:
+    Type: String
+    Default: ""
+  WUMPassword:
+    Type: String
+    Default: ""
+    NoEcho: true
   KeyPairName:
     Description: >-
       The private key used to log in to instances through SSH
@@ -1356,17 +1297,17 @@ Parameters:
 Mappings:
   WSO2PuppetMasterRegionMap:
     ap-southeast-2:
-       Ubuntu1804: ami-0714f5dfb52dd25ab
+       Ubuntu1804: ami-08fd0c33cde7b66a8
     eu-west-1:
-       Ubuntu1804: ami-07cddf027086acf93
+       Ubuntu1804: ami-0a325890208046c45
     us-east-1:
-       Ubuntu1804: ami-0909f315e6e19962e
+       Ubuntu1804: ami-0efd22d5ad2d3ef1d
     us-east-2:
-       Ubuntu1804: ami-05b68930b60ceb310
+       Ubuntu1804: ami-02fdc155026e74ae0
     us-west-1:
-       Ubuntu1804: ami-0d1f1ad66b6870aa0
+       Ubuntu1804: ami-003c7e11d091a6b9d
     us-west-2:
-       Ubuntu1804: ami-0b47780f8e14e20b9
+       Ubuntu1804: ami-0a54a1700c47bdb98
   WSO2APIMAMIRegionMap:
     ap-southeast-2:
       CentOS7: ami-0211f0ecd0e693937
