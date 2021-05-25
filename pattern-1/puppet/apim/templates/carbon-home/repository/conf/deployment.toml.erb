@@ -1,7 +1,5 @@
 [server]
 hostname = "<%= @hostname %>"
-node_ip = "<%= @binary_data_receiver_hostname %>"
-mode = "single"
 base_path = "${carbon.protocol}://${carbon.host}:${carbon.management.port}"
 #discard_empty_caches = false
 server_role = "default"
@@ -233,6 +231,9 @@ type = "loadbalance"
 #persistent_notifier.ttl = 5000
 #persistent_notifier.username = "root"
 #persistent_notifier.password = "root"
+
+[transport.https.properties]
+proxyPort = 443
 
 [[event_handler]]
 name = "userPostSelfRegistration"

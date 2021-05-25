@@ -24,7 +24,7 @@ class mi inherits mi::params {
       ensure  => file,
       mode    => '0644',
       content => template("${module_name}/carbon-home/${template}.erb"),
-      notify  => Service["${wso2_service_name}"],
+#      notify  => Service["${wso2_service_name}"],
       require => Class["apim_common"]
     }
   }
@@ -38,7 +38,7 @@ class mi inherits mi::params {
       group => $user_group,
       mode => '0755',
       source => "puppet:///modules/${module_name}/${file}",
-      notify  => Service["${wso2_service_name}"],
+#      notify  => Service["${wso2_service_name}"],
       require => Class["apim_common"]
     }
   }
@@ -49,7 +49,7 @@ class mi inherits mi::params {
       ensure => absent,
       owner => $user,
       group => $user_group,
-      notify  => Service["${wso2_service_name}"],
+#      notify  => Service["${wso2_service_name}"],
       require => Class["apim_common"]
     }
   }
@@ -61,7 +61,7 @@ class mi inherits mi::params {
     group   => $user_group,
     mode    => '0754',
     content => template("${module_name}/carbon-home/${start_script_template}.erb"),
-    notify  => Service["${wso2_service_name}"],
+#    notify  => Service["${wso2_service_name}"],
     require => Class["apim_common"]
   }
 
