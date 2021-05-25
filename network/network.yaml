@@ -1,4 +1,4 @@
-# Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+# Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
 # limitations under the License.
 
 AWSTemplateFormatVersion: 2010-09-09
-Description: WSO2 API Manager deployment with WSO2 API Manager Analytics - Network
+Description: WSO2 API Manager deployment with WSO2 Micro Integrator - Network
 Metadata:
   'AWS::CloudFormation::Interface':
     ParameterGroups:
