@@ -1272,7 +1272,7 @@ Parameters:
     Description: VPC ID of your existing Virtual Private Cloud (VPC)
   WSO2APIMPrivateSubnet1:
     Type: AWS::EC2::Subnet::Id
-    Description: Private Subnet for PuppetMaster, Product Instance, EFS and the DB
+    Description: Private Subnet for PuppetMaster, Product Instance, and the DB
   WSO2APIMPrivateSubnet2:
     Type: AWS::EC2::Subnet::Id
     Description: Private Subnet for Prodcut Instance and the DB
