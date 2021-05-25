@@ -1,4 +1,4 @@
-# Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+# Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -13,7 +13,7 @@
 # limitations under the License.
 
 AWSTemplateFormatVersion: '2010-09-09'
-Description: WSO2 API Manager deployment with WSO2 API Manager Analytics
+Description: WSO2 API Manager deployment with WSO2 Micro Integrator
 
 Metadata:
   AWS::CloudFormation::Interface:
@@ -23,6 +23,8 @@ Metadata:
         Parameters:
           - AWSAccessKeyId
           - AWSAccessKeySecret
+          - WUMUsername
+          - WUMPassword
           - DBUsername
           - DBPassword
           - KeyPairName
@@ -38,6 +40,10 @@ Metadata:
         default: AWS Access Key ID
       AWSAccessKeySecret:
         default: AWS Access Secret Key
+      WUMUsername:
+        default: WSO2 Username
+      WUMPassword:
+        default: WSO2 Password
       CertificateName:
         default: SSL Certificate Name
       CustomUserData:
@@ -63,6 +69,15 @@ Parameters:
 
   AWSAccessKeySecret:
     Type: String
+    NoEcho: true
+
+  WUMUsername:
+    Type: String
+    Default: ""
+  WUMPassword:
+    Type: String
+    Default: ""
+    NoEcho: true
 
   CertificateName:
     Description: A valid SSL certificate used for HTTPS
@@ -118,7 +133,7 @@ Resources:
   WSO2Network:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://aws-nested-cloudformation.s3.amazonaws.com/wso2am-3.2.0/network.yaml
+      TemplateURL: https://s3.amazonaws.com/apim-4.0.0-cfn/network.yaml
       TimeoutInMinutes: '30'
       Parameters:
         KeyPairName: !Ref KeyPairName
@@ -129,7 +144,7 @@ Resources:
   Database:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://aws-nested-cloudformation.s3.amazonaws.com/wso2am-3.2.0/database.yaml
+      TemplateURL: https://s3.amazonaws.com/apim-4.0.0-cfn/database.yaml
       TimeoutInMinutes: '30'
       Parameters:
         DBUsername: !Ref DBUsername
@@ -146,11 +161,13 @@ Resources:
   WSO2APIManagerSetup:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://aws-nested-cloudformation.s3.amazonaws.com/wso2am-3.2.0/pattern-1.yaml
+      TemplateURL: https://s3.amazonaws.com/apim-4.0.0-cfn/pattern-1.yaml
       TimeoutInMinutes: '30'
       Parameters:
         AWSAccessKeyId: !Ref AWSAccessKeyId
         AWSAccessKeySecret: !Ref AWSAccessKeySecret
+        WUMUsername: !Ref WUMUsername
+        WUMPassword: !Ref WUMPassword
         CertificateName: !Ref CertificateName
         DBUsername: !Ref DBUsername
         DBPassword: !Ref DBPassword
@@ -182,8 +199,8 @@ Outputs:
     Value: !GetAtt WSO2APIManagerSetup.Outputs.PublisherUrl
     Description: API Manager service publisher URL
 
-  StoreUrl:
-    Value: !GetAtt WSO2APIManagerSetup.Outputs.StoreUrl
+  DevPortalUrl:
+    Value: !GetAtt WSO2APIManagerSetup.Outputs.DevPortalUrl
     Description: API Manager service devportal URL
 
   AdminUrl:
@@ -202,17 +219,13 @@ Outputs:
     Value: !GetAtt WSO2APIManagerSetup.Outputs.GatewayHttpUrl
     Description: API Manager HTTP Gateway endpoint
 
-  AnalyticsDashboard:
-    Value: !GetAtt WSO2APIManagerSetup.Outputs.AnalyticsDashboard
-    Description: API Manager Analytics Dashboard URL
+  MIPassThroughHttpsUrl:
+    Value: !GetAtt WSO2APIManagerSetup.Outputs.MIPassThroughHttpsUrl
+    Description: MI HTTPS Pass Through URL
 
-  AnalyticsBusinessRule:
-    Value: !GetAtt WSO2APIManagerSetup.Outputs.AnalyticsBusinessRule
-    Description: API Manager Analytics Business Rules URL
-
-  AnalyticsPolicies:
-    Value: !GetAtt WSO2APIManagerSetup.Outputs.AnalyticsPolicies
-    Description: API Manager Analytics Policies URL
+  MIPassThroughHttpUrl:
+    Value: !GetAtt WSO2APIManagerSetup.Outputs.MIPassThroughHttpUrl
+    Description: MI HTTP Pass Through URL
 
   WSO2APIMDBInstanceEndpointAddress:
     Value: !GetAtt Database.Outputs.WSO2APIMDBInstanceEndpointAddress

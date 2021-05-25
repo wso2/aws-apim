@@ -1,5 +1,5 @@
-# ----------------------------------------------------------------------------
-#  Copyright (c) 2018 WSO2, Inc. http://www.wso2.org
+#----------------------------------------------------------------------------
+#  Copyright (c) 2021 WSO2, Inc. http://www.wso2.org
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -12,11 +12,9 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-# ----------------------------------------------------------------------------
+#----------------------------------------------------------------------------
 
-# Class: apim_analytics_worker
-# Init class of API Manager Analytics - Worker profile
-class apim_analytics_worker inherits apim_analytics_worker::params {
+class mi inherits mi::params {
 
   include apim_common
 
@@ -26,7 +24,7 @@ class apim_analytics_worker inherits apim_analytics_worker::params {
       ensure  => file,
       mode    => '0644',
       content => template("${module_name}/carbon-home/${template}.erb"),
-      notify  => Service["${wso2_service_name}"],
+#      notify  => Service["${wso2_service_name}"],
       require => Class["apim_common"]
     }
   }
@@ -40,7 +38,7 @@ class apim_analytics_worker inherits apim_analytics_worker::params {
       group => $user_group,
       mode => '0755',
       source => "puppet:///modules/${module_name}/${file}",
-      notify  => Service["${wso2_service_name}"],
+#      notify  => Service["${wso2_service_name}"],
       require => Class["apim_common"]
     }
   }
@@ -51,31 +49,20 @@ class apim_analytics_worker inherits apim_analytics_worker::params {
       ensure => absent,
       owner => $user,
       group => $user_group,
-      notify  => Service["${wso2_service_name}"],
+#      notify  => Service["${wso2_service_name}"],
       require => Class["apim_common"]
     }
   }
 
-  # Copy wso2server.sh to installed directory
+  # Copy micro-integrator.sh to installed directory
   file { "${carbon_home}/${start_script_template}":
     ensure  => file,
     owner   => $user,
     group   => $user_group,
     mode    => '0754',
     content => template("${module_name}/carbon-home/${start_script_template}.erb"),
-    notify  => Service["${wso2_service_name}"],
+#    notify  => Service["${wso2_service_name}"],
     require => Class["apim_common"]
   }
 
-  /*
-    Following script can be used to copy file to a given location.
-    This will copy some_file to install_path -> repository.
-    Note: Ensure that file is available in modules -> apim_analytics_worker -> files
-  */
-  # file { "${install_path}/repository/some_file":
-  #   owner  => $user,
-  #   group  => $user_group,
-  #   mode   => '0644',
-  #   source => "puppet:///modules/${module_name}/some_file",
-  # }
 }

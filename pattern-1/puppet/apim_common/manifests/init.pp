@@ -126,7 +126,7 @@ class apim_common inherits apim_common::params {
       command => "wget -q ${remote_pack} -O ${pack_dir}/${product_binary}",
       path    => "/usr/bin/",
       require => File["delete-existing-pack"],
-      notify  => [Exec["stop-server"], Exec["detele-pack"], Exec["unzip-update"]],
+      notify  => [Exec["stop-server"], Exec["delete-pack"], Exec["unzip-update"]],
     }
   }
 
@@ -140,7 +140,7 @@ class apim_common inherits apim_common::params {
   }
 
   # Delete existing setup
-  exec { "detele-pack":
+  exec { "delete-pack":
     command     => "rm -rf ${carbon_home}",
     path        => "/bin/",
     onlyif      => "/usr/bin/test -d ${carbon_home}",

@@ -1,5 +1,5 @@
 # ----------------------------------------------------------------------------
-#  Copyright (c) 2018 WSO2, Inc. http://www.wso2.org
+#  Copyright (c) 2021 WSO2, Inc. http://www.wso2.org
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -14,8 +14,15 @@
 #  limitations under the License.
 # ----------------------------------------------------------------------------
 
-# Class: apim_analytics_dashboard::custom
-# This class is reserved to run custom user code before starting the server.
-class apim_analytics_dashboard::custom {
-  # resources
+# Class mi:startserver
+# Starts the MI server as a service in the final stage.
+class mi::startserver (
+  $service_name = $mi::params::service_name
+)
+  inherits mi::params {
+
+  # service { $service_name:
+  #   ensure => running,
+  #   enable => true,
+  # }
 }

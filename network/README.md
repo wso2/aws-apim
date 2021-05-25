@@ -1,6 +1,6 @@
-# WSO2 API Manager deployment with WSO2 API Manager Analytics - Network
+# WSO2 API Manager deployment with WSO2 Micro Integrator - Network
 
-This is phase one of deploying WSO2 API Manager deployment with WSO2 API Manager Analytics. Use the [network.yaml](network.yaml) to create the required network. If you already have a preconfigured network, please proceed to [Phase 2](../database/README.md).
+This is the phase one of deploying WSO2 API Manager deployment with WSO2 Micro Integrator. Use the [network.yaml](network.yaml) to create the required network. If you already have a preconfigured network, please proceed to [Phase 2](../database/README.md).
 
 ## Design Overview
 

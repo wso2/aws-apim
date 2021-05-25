@@ -1,6 +1,7 @@
 #!/bin/sh
+# micro-integrator.sh
 # ----------------------------------------------------------------------------
-#  Copyright 2005-2012 WSO2, Inc. http://www.wso2.org
+#  Copyright 2018 WSO2, Inc. http://www.wso2.org
 #
 #  Licensed under the Apache License, Version 2.0 (the "License");
 #  you may not use this file except in compliance with the License.
@@ -13,25 +14,6 @@
 #  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 #  See the License for the specific language governing permissions and
 #  limitations under the License.
-
-# ----------------------------------------------------------------------------
-# Main Script for the WSO2 Carbon Server
-#
-# Environment Variable Prequisites
-#
-#   CARBON_HOME   Home of WSO2 Carbon installation. If not set I will  try
-#                   to figure it out.
-#
-#   JAVA_HOME       Must point at your Java Development Kit installation.
-#
-#   JAVA_OPTS       (Optional) Java runtime options used when the commands
-#                   is executed.
-#
-# NOTE: Borrowed generously from Apache Tomcat startup scripts.
-# -----------------------------------------------------------------------------
-
-# OS specific support.  $var _must_ be set to either true or false.
-#ulimit -n 100000
 
 export JAVA_HOME="<%= @java_symlink %>"
 cygwin=false;
@@ -155,30 +137,6 @@ do
           CMD="version"
     elif [ "$c" = "--restart" ] || [ "$c" = "-restart" ] || [ "$c" = "restart" ]; then
           CMD="restart"
-    elif [ "$c" = "--test" ] || [ "$c" = "-test" ] || [ "$c" = "test" ]; then
-          CMD="test"
-    elif [ "$c" = "--optimize" ] || [ "$c" = "-optimize" ] || [ "$c" = "optimize" ]; then
-      for option in $*; do
-        if [ "$option" = "--skipConfigOptimization" ] || [ "$option" = "-skipConfigOptimization" ] ||
-        [ "$option" = "skipConfigOptimization" ]; then
-          passedSkipConfigOptimizationOption=true
-          echo "Passed skipConfigOptimization Option: $passedSkipConfigOptimizationOption"
-        fi
-      done
-
-      for profile in $*; do
-        case "$profile" in
-          *Dprofile=*)
-            cd $(dirname "$0")
-            if [ "$passedSkipConfigOptimizationOption" = true ]; then
-              sh profileSetup.sh $profile --skipConfigOptimization
-            else
-              sh profileSetup.sh $profile
-            fi
-            echo "Starting the server..."
-            ;;
-        esac
-      done
     else
         args="$args $c"
     fi
@@ -204,7 +162,7 @@ elif [ "$CMD" = "start" ]; then
   fi
   export CARBON_HOME="$CARBON_HOME"
 # using nohup sh to avoid erros in solaris OS.TODO
-  nohup sh "$CARBON_HOME"/bin/wso2server.sh $args > /dev/null 2>&1 &
+  nohup sh "$CARBON_HOME"/bin/micro-integrator.sh $args > /dev/null 2>&1 &
   exit 0
 elif [ "$CMD" = "stop" ]; then
   export CARBON_HOME="$CARBON_HOME"
@@ -223,10 +181,9 @@ elif [ "$CMD" = "restart" ]; then
   done
 
 # using nohup sh to avoid erros in solaris OS.TODO
-  nohup sh "$CARBON_HOME"/bin/wso2server.sh $args > /dev/null 2>&1 &
+  nohup sh "$CARBON_HOME"/bin/micro-integrator.sh $args > /dev/null 2>&1 &
   exit 0
-elif [ "$CMD" = "test" ]; then
-    JAVACMD="exec "$JAVACMD""
+
 elif [ "$CMD" = "version" ]; then
   cat "$CARBON_HOME"/bin/version.txt
   cat "$CARBON_HOME"/bin/wso2carbon-version.txt
@@ -237,22 +194,21 @@ fi
 java_version=$("$JAVACMD" -version 2>&1 | awk -F '"' '/version/ {print $2}')
 java_version_formatted=$(echo "$java_version" | awk -F. '{printf("%02d%02d",$1,$2);}')
 if [ $java_version_formatted -lt 0107 ] || [ $java_version_formatted -gt 1100 ]; then
-   echo " Starting WSO2 Carbon (in unsupported JDK)"
-   echo " [ERROR] CARBON is supported only on JDK 1.7, 1.8, 9, 10 and 11"
+   echo " Starting WSO2 MI (in unsupported JDK)"
+   echo " [ERROR] MI is supported only on JDK 1.8, 9, 10 and 11"
 fi
 
 CARBON_XBOOTCLASSPATH=""
-for f in "$CARBON_HOME"/lib/xboot/*.jar
+for f in "$CARBON_HOME"/wso2/lib/xboot/*.jar
 do
-    if [ "$f" != "$CARBON_HOME/lib/xboot/*.jar" ];then
+    if [ "$f" != "$CARBON_HOME/wso2/lib/xboot/*.jar" ];then
         CARBON_XBOOTCLASSPATH="$CARBON_XBOOTCLASSPATH":$f
     fi
 done
 
-
 CARBON_CLASSPATH=""
 if [ -e "$JAVA_HOME/lib/tools.jar" ]; then
-    CARBON_CLASSPATH="$JAVA_HOME/lib/tools.jar"
+    CARBON_CLASSPATH="$JAVA_HOME/../lib/tools.jar"
 fi
 for f in "$CARBON_HOME"/bin/*.jar
 do
@@ -260,12 +216,10 @@ do
         CARBON_CLASSPATH="$CARBON_CLASSPATH":$f
     fi
 done
-for t in "$CARBON_HOME"/lib/*.jar
+for t in "$CARBON_HOME"/wso2/lib/*.jar
 do
     CARBON_CLASSPATH="$CARBON_CLASSPATH":$t
 done
-
-
 
 # For Cygwin, switch paths to Windows format before running java
 if $cygwin; then
@@ -279,8 +233,8 @@ fi
 
 # ----- Execute The Requested Command -----------------------------------------
 
-echo JAVA_HOME environment variable is set to $JAVA_HOME
-echo CARBON_HOME environment variable is set to "$CARBON_HOME"
+# echo JAVA_HOME environment variable is set to $JAVA_HOME
+# echo CARBON_HOME environment variable is set to "$CARBON_HOME"
 
 cd "$CARBON_HOME"
 
@@ -296,16 +250,27 @@ if [ -z "$JVM_MEM_OPTS" ]; then
    java_version=$("$JAVACMD" -version 2>&1 | awk -F '"' '/version/ {print $2}')
    JVM_MEM_OPTS="-Xms<%=@jvmxms%> -Xmx<%=@jvmxmx%>"
    if [ "$java_version" \< "1.8" ]; then
-      JVM_MEM_OPTS="$JVM_MEM_OPTS -XX:MaxPermSize=<%=@jvmxmx%>"
+      JVM_MEM_OPTS="$JVM_MEM_OPTS"
    fi
 fi
-echo "Using Java memory options: $JVM_MEM_OPTS"
+# echo "Using Java memory options: $JVM_MEM_OPTS"
+
+#setting up profile parameter for runtime in MB
+PROFILE_SELECTED="false"
+for i in "$@"; do
+   if echo "$i" | grep -q "Dprofile"; then
+      PROFILE_SELECTED="true"
+   fi
+done
+
+if [ "$PROFILE_SELECTED" = false ] ; then
+   NODE_PARAMS="$NODE_PARAMS -Dprofile=micro-integrator-default"
+fi
 
 #To monitor a Carbon server in remote JMX mode on linux host machines, set the below system property.
 #   -Djava.rmi.server.hostname="your.IP.goes.here"
 
 JAVA_VER_BASED_OPTS=""
-
 
 if [ $java_version_formatted -ge 1100 ]; then
     JAVA_VER_BASED_OPTS="--add-opens=java.base/java.net=ALL-UNNAMED --add-opens=java.base/java.lang=ALL-UNNAMED --add-opens java.rmi/sun.rmi.transport=ALL-UNNAMED"
@@ -321,19 +286,28 @@ do
     $JAVA_OPTS \
     -Dcom.sun.management.jmxremote \
     -classpath "$CARBON_CLASSPATH" \
-    $JAVA_VER_BASED_OPTS \
     -Djava.io.tmpdir="$CARBON_HOME/tmp" \
-    -Dcatalina.base="$CARBON_HOME/lib/tomcat" \
+    -Dcatalina.base="$CARBON_HOME/wso2/lib/tomcat" \
     -Dwso2.server.standalone=true \
     -Dcarbon.registry.root=/ \
     -Djava.command="$JAVACMD" \
+    -Dqpid.conf="/conf/advanced/" \
+    $JAVA_VER_BASED_OPTS \
     -Dcarbon.home="$CARBON_HOME" \
+    -Dlogger.server.name="micro-integrator" \
     -Djava.util.logging.manager=org.apache.juli.ClassLoaderLogManager \
-    -Dcarbon.config.dir.path="$CARBON_HOME/repository/conf" \
-    -Djava.util.logging.config.file="$CARBON_HOME/repository/conf/etc/logging-bridge.properties" \
-    -Dcomponents.repo="$CARBON_HOME/repository/components/plugins" \
-    -Dconf.location="$CARBON_HOME/repository/conf"\
-    -Dcom.atomikos.icatch.file="$CARBON_HOME/lib/transactions.properties" \
+    -Dcarbon.config.dir.path="$CARBON_HOME/conf" \
+    -Dcarbon.repository.dir.path="$CARBON_HOME/repository" \
+    -Dcarbon.components.dir.path="$CARBON_HOME/wso2/components" \
+    -Dcarbon.dropins.dir.path="$CARBON_HOME/dropins" \
+    -Dcarbon.external.lib.dir.path="$CARBON_HOME/lib" \
+    -Dcarbon.patches.dir.path="$CARBON_HOME/patches" \
+    -Dcarbon.internal.lib.dir.path="$CARBON_HOME/wso2/lib" \
+    -Dei.extendedURIBasedDispatcher=org.wso2.micro.integrator.core.handlers.IntegratorStatefulHandler \
+    -Djava.util.logging.config.file="$CARBON_HOME/conf/etc/logging-bridge.properties" \
+    -Dcomponents.repo="$CARBON_HOME/wso2/components/plugins" \
+    -Dconf.location="$CARBON_HOME/conf" \
+    -Dcom.atomikos.icatch.file="$CARBON_HOME/wso2/lib/transactions.properties" \
     -Dcom.atomikos.icatch.hide_init_file_path=true \
     -Dorg.apache.jasper.compiler.Parser.STRICT_QUOTE_ESCAPING=false \
     -Dorg.apache.jasper.runtime.BodyContentImpl.LIMIT_BUFFER=true \
@@ -343,12 +317,19 @@ do
     -Djava.security.egd=file:/dev/./urandom \
     -Dfile.encoding=UTF8 \
     -Djava.net.preferIPv4Stack=true \
+    -DNonRegistryMode=true \
+    -DNonUserCoreMode=true \
     -Dcom.ibm.cacheLocalHost=true \
-    -Dorg.opensaml.httpclient.https.disableHostnameVerification=true \
-    -Dhttpclient.hostnameVerifier=AllowAll \
+    -Dcarbon.use.registry.repo=false \
     -DworkerNode=false \
-    -DenableCorrelationLogs=false \
-    -Dcarbon.new.config.dir.path="$CARBON_HOME/repository/resources/conf" \
-    org.wso2.carbon.bootstrap.Bootstrap $*
+    -Dorg.apache.cxf.io.CachedOutputStream.Threshold=104857600 \
+    -Djavax.xml.xpath.XPathFactory:http://java.sun.com/jaxp/xpath/dom=net.sf.saxon.xpath.XPathFactoryImpl \
+    -DavoidConfigHashRead=true \
+    -Dproperties.file.path=default \
+    -DenableReadinessProbe=true \
+    -DenableManagementApi=true \
+    $NODE_PARAMS \
+    -Dorg.apache.activemq.SERIALIZABLE_PACKAGES="*" \
+    org.wso2.micro.integrator.bootstrap.Bootstrap $*
     status=$?
 done

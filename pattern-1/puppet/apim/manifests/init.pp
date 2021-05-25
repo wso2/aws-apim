@@ -56,7 +56,7 @@ class apim inherits apim::params {
     }
   }
 
-  # Copy wso2server.sh to installed directory
+  # Copy api-manager.sh to installed directory
   file { "${carbon_home}/${start_script_template}":
     ensure  => file,
     owner   => $user,
@@ -65,6 +65,14 @@ class apim inherits apim::params {
     content => template("${module_name}/carbon-home/${start_script_template}.erb"),
 #    notify  => Service["${wso2_service_name}"],
     require => Class["apim_common"]
+  }
+
+  # Copy database connector to the installed directory
+  file { "${carbon_home}/repository/components/lib/${db_connector}":
+    owner  => $user,
+    group  => $user_group,
+    mode   => '0754',
+    source => "puppet:///modules/installers/${db_connector}",
   }
 
   /*
