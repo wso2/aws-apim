@@ -124,7 +124,7 @@ Resources:
         - IpProtocol: tcp
           FromPort: '5672'
           ToPort: '5672'
-          SourceSecurityGroupId: !Ref WSO2APIMLoadBalancerSecurityGroup
+          CidrIp: 0.0.0.0/0
         - IpProtocol: tcp
           FromPort: '8140'
           ToPort: '8140'
@@ -222,24 +222,12 @@ Resources:
             - nohup /usr/lib/logstash-6.5.1/bin/logstash -f /usr/lib/logstash-6.5.1/logstash-PUPPETMASTER.conf & >> /home/ubuntu/elastic.log
             - sed -i '/\[main\]/a dns_alt_names=puppetmaster,puppet' /etc/puppet/puppet.conf
             - sed -i '/\[master\]/a autosign=true' /etc/puppet/puppet.conf
-#            - !Join
-#              - ''
-#              - - export ProductVersion=
-#                - 4.0.0
             - service puppetmaster restart
             - cd /home/ubuntu/
-#            - !Sub "./wso2_update.sh '' '' wso2am-${ProductVersion}"
-#            - !Sub "./wso2_update.sh '' '' wso2mi-${ProductVersion}"
             - wget -O wso2_update.sh https://s3.amazonaws.com/apim-4.0.0-cfn/wso2_update.sh
             - chmod +x wso2_update.sh
-            - !Sub
-              - ./wso2_update.sh ${Username} ${Password} wso2am-4.0.0
-              - { Username: !Ref WUMUsername }
-              - { Password: !Ref WUMPassword }
-            - !Sub
-              - ./wso2_update.sh ${Username} ${Password} wso2mi-4.0.0
-              - { Username: !Ref WUMUsername }
-              - { Password: !Ref WUMPassword }
+            - !Sub "./wso2_update.sh '${WUMUsername}' '${WUMPassword}' 'wso2am-4.0.0'"
+            - !Sub "./wso2_update.sh '${WUMUsername}' '${WUMPassword}' 'wso2mi-4.0.0'"
             - !Sub "/usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource PuppetMaster --region ${AWS::Region}"
             - !Join
               - ''

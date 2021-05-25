@@ -1,4 +1,4 @@
-# Copyright (c) 2020, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
+# Copyright (c) 2021, WSO2 Inc. (http://www.wso2.org) All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -276,7 +276,6 @@ Resources:
   WSO2Network:
     Type: AWS::CloudFormation::Stack
     Properties:
-      #TemplateURL: https://aws-nested-cloudformation.s3.amazonaws.com/wso2am-4.0.0/network.yaml
       TemplateURL: https://s3.amazonaws.com/apim-4.0.0-cfn/network.yaml
       TimeoutInMinutes: '60'
       Parameters:
@@ -296,7 +295,6 @@ Resources:
   Database:
     Type: AWS::CloudFormation::Stack
     Properties:
-      #TemplateURL: https://aws-nested-cloudformation.s3.amazonaws.com/wso2am-4.0.0/database.yaml
       TemplateURL: https://s3.amazonaws.com/apim-4.0.0-cfn/database.yaml
       TimeoutInMinutes: '60'
       Parameters:
