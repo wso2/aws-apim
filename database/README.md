@@ -1,10 +1,10 @@
-# WSO2 API Manager deployment with WSO2 API Manager Analytics - Database
+# WSO2 API Manager deployment with WSO2 Micro Integrator - Database
 
-This is phase two of deploying WSO2 API Manager deployment with WSO2 API Manager Analytics. Use the [database.yaml](database.yaml) to create the required Database. The following are the tested database versions at the moment.
+This is the phase two of deploying WSO2 API Manager deployment with WSO2 Micro Integrator. Use the [database.yaml](database.yaml) to create the required Database. The following are the tested database versions at the moment.
 
 ```
   - MySQL-5.7
-  - Postgres-9.6
+  - 
   - Postgres-10.5
   - Oracle-SE1-11.2
   - Oracle-SE2-12.1
