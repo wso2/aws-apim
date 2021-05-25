@@ -33,7 +33,7 @@ class mi::params inherits apim_common::params {
   $hostname = 'CF_ELB_DNS_NAME'
   
   # ----- Service Catalog params -----
-  $catalog_apim_host = 'https://CF_ELB_DNS_NAME:${mgt.transport.https.port}'
+  $catalog_apim_host = 'https://CF_ELB_DNS_NAME'
   $catalog_enable = true
   $catalog_username = 'admin'
   $catalog_password = 'admin'
