@@ -1246,6 +1246,7 @@ Parameters:
       - Postgres-12.10
       - Oracle-SE2-19
       - SQLServer-SE-13.00
+      - SQLServer-SE-14.00
   OperatingSystem:
     Type: String
     Default: Ubuntu1804
