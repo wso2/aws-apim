@@ -133,7 +133,7 @@ Resources:
   WSO2Network:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.amazonaws.com/apim-4.0.0-cfn/network.yaml
+      TemplateURL: https://s3.amazonaws.com/apim-4.1.0-cfn/network.yaml
       TimeoutInMinutes: '30'
       Parameters:
         KeyPairName: !Ref KeyPairName
@@ -144,7 +144,7 @@ Resources:
   Database:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.amazonaws.com/apim-4.0.0-cfn/database.yaml
+      TemplateURL: https://s3.amazonaws.com/apim-4.1.0-cfn/database.yaml
       TimeoutInMinutes: '30'
       Parameters:
         DBUsername: !Ref DBUsername
@@ -161,7 +161,7 @@ Resources:
   WSO2APIManagerSetup:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.amazonaws.com/apim-4.0.0-cfn/pattern-1.yaml
+      TemplateURL: https://s3.amazonaws.com/apim-4.1.0-cfn/pattern-1.yaml
       TimeoutInMinutes: '30'
       Parameters:
         AWSAccessKeyId: !Ref AWSAccessKeyId
