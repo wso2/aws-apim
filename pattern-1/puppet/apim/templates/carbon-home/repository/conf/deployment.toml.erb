@@ -38,6 +38,9 @@ password =  "<%= @key_store_password %>"
 alias =  "<%= @key_store_key_alias %>"
 key_password =  "<%= @key_store_key_password %>"
 
+#[keystore.listener_profile]
+#bind_address = "0.0.0.0"
+
 #[keystore.primary]
 #file_name =  "wso2carbon.jks"
 #type =  "JKS"
@@ -56,6 +59,7 @@ key_password =  "<%= @key_store_key_password %>"
 [[apim.gateway.environment]]
 name = "<%= environment['name'] %>"
 type = "<%= environment['type'] %>"
+provider = "<%= environment['provider'] %>"
 display_in_api_console = true
 description = "<%= environment['description'] %>"
 show_as_token_endpoint_url = true
@@ -135,7 +139,11 @@ service_url = "<%= @key_manager_server_url %>"
 #claims_extractor_impl = "org.wso2.carbon.apimgt.impl.token.ExtendedDefaultClaimsRetriever"
 
 [apim.oauth_config]
+#enable_outbound_auth_header = false
+#auth_header = "Authorization"
 revoke_endpoint = "<%= @oauth_configs_revoke_api_url %>"
+#enable_token_encryption = false
+#enable_token_hashing = false
 
 [apim.devportal]
 url = "<%= @api_devportal_url %>"
@@ -255,3 +263,8 @@ notification_endpoint = "https://localhost:${mgt.transport.https.port}/internal/
 username = "${admin.username}"
 password = "${admin.password}"
 'header.X-WSO2-KEY-MANAGER' = "default"
+
+[oauth.grant_type.token_exchange]
+enable = "<%= @token_exchange_enable %>"
+allow_refresh_tokens = "<%= @token_exchange_allow_refresh_tokens %>"
+iat_validity_period = "<%= @token_exchange_iat_validity_period %>"
