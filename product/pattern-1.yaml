@@ -1212,12 +1212,13 @@ Parameters:
   JDK:
     Description: Choose preferred JDK from the list
     Type: String
-    Default: "OPEN_JDK8"
+    Default: "ORACLE_JDK8"
     AllowedValues:
-      - "OPEN_JDK8"
       - "ORACLE_JDK8"
       - "CORRETTO_JDK8"
-      - "ADOPT_OPEN_JDK11"
+      - "TEMURIN_JDK8"
+      - "CORRETTO_JDK11"
+      - "TEMURIN_JDK11"
   ElasticSearchEndpoint:
     Description: If you have ElasticSearch endpoint to publish logs, else keep this empty
     Type: String
