@@ -157,10 +157,10 @@ Parameters:
     Default: MySQL-5.7
     AllowedValues:
       - MySQL-5.7
-      - Postgres-9.6
-      - Postgres-10.5
-      - Oracle-SE1-11.2
-      - Oracle-SE2-12.1
+      - MySQL-8.0
+      - Postgres-11.15
+      - Postgres-12.10
+      - Oracle-SE2-19
       - SQLServer-SE-13.00
       - SQLServer-SE-14.00
   EnvironmentName:
@@ -180,18 +180,18 @@ Mappings:
   DBEngineMap:
     MySQL-5.7:
       DBEngine: "mysql_5.7"
-    Postgres-9.6:
-      DBEngine: "postgres_9.6"
-    Postgres-10.5:
-      DBEngine: "postgres_10.5"
+    MySQL-8.0:
+      DBEngine: "mysql_8.0"
+    Postgres-11.15:
+      DBEngine: "postgres_11.15"
+    Postgres-12.10:
+      DBEngine: "postgres_12.10"
     SQLServer-SE-13.00:
       DBEngine: "sqlserver-se_13.00"
     SQLServer-SE-14.00:
       DBEngine: "sqlserver-se_14.00"
-    Oracle-SE1-11.2:
-      DBEngine: "oracle-se1_11.2"
-    Oracle-SE2-12.1:
-      DBEngine: "oracle-se2_12.1"
+    Oracle-SE2-19:
+      DBEngine: "oracle-se2_19"
 Conditions:
   UseSQLServerDB: !Equals [sqlserver-se, !Select [0, !Split ["_", !FindInMap [ DBEngineMap, !Ref DB, DBEngine]]]]
   UseLicensedVersion: !Or [ !Equals [sqlserver, !Select [0, !Split ["-", !FindInMap [ DBEngineMap, !Ref DB, DBEngine]]]], !Equals [oracle, !Select [0, !Split ["-", !FindInMap [ DBEngineMap, !Ref DB, DBEngine]]]] ]
