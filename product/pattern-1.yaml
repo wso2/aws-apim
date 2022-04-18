@@ -226,8 +226,8 @@ Resources:
             - cd /home/ubuntu/
             - wget -O wso2_update.sh https://s3.amazonaws.com/apim-4.1.0-cfn/wso2_update.sh
             - chmod +x wso2_update.sh
-            - !Sub "./wso2_update.sh ${WUMUsername} ${WUMPassword} wso2am-4.1.0"
-            - !Sub "./wso2_update.sh ${WUMUsername} ${WUMPassword} wso2mi-4.1.0"
+            - !Sub "./wso2_update.sh '${WUMUsername}' '${WUMPassword}' 'wso2am-4.1.0'"
+            - !Sub "./wso2_update.sh '${WUMUsername}' '${WUMPassword}' 'wso2mi-4.1.0'"
             - !Sub "/usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource PuppetMaster --region ${AWS::Region}"
             - !Join
               - ''
