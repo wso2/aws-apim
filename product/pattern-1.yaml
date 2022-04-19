@@ -224,10 +224,10 @@ Resources:
             - sed -i '/\[master\]/a autosign=true' /etc/puppet/puppet.conf
             - service puppetmaster restart
             - cd /home/ubuntu/
-            - wget -O wso2_update.sh https://s3.amazonaws.com/apim-4.0.0-cfn/wso2_update.sh
+            - wget -O wso2_update.sh https://s3.amazonaws.com/apim-4.1.0-cfn/wso2_update.sh
             - chmod +x wso2_update.sh
-            - !Sub "./wso2_update.sh '${WUMUsername}' '${WUMPassword}' 'wso2am-4.0.0'"
-            - !Sub "./wso2_update.sh '${WUMUsername}' '${WUMPassword}' 'wso2mi-4.0.0'"
+            - !Sub "./wso2_update.sh '${WUMUsername}' '${WUMPassword}' 'wso2am-4.1.0'"
+            - !Sub "./wso2_update.sh '${WUMUsername}' '${WUMPassword}' 'wso2mi-4.1.0'"
             - !Sub "/usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource PuppetMaster --region ${AWS::Region}"
             - !Join
               - ''
@@ -346,7 +346,7 @@ Resources:
             - !Join
               - ''
               - - sed -i "s/CF_PRODUCT_VERSION/
-                - 4.0.0
+                - 4.1.0
                 - /g" /usr/local/bin/provision_db_apim.sh
             - bash /usr/local/bin/provision_db_apim.sh
   PuppetMasterSecurityGroup:
@@ -434,8 +434,8 @@ Resources:
           wget --no-check-certificate --no-proxy 'http://wso2-cloudformation-templates.s3.amazonaws.com/private_ip_extractor.py' -P /usr/local/bin/
           wget --no-check-certificate --no-proxy 'http://wso2-cloudformation-templates.s3.amazonaws.com/apim_private_ip_extractor.py' -P /usr/local/bin/
           mv log_archiver.sh /usr/lib/
-          export ProductVersion=4.0.0
-          sed -i "s/Product_Version/4.0.0/g" /usr/lib/logstash-6.5.1/logstash-APIM.conf
+          export ProductVersion=4.1.0
+          sed -i "s/Product_Version/4.1.0/g" /usr/lib/logstash-6.5.1/logstash-APIM.conf
           sed -i "s^secret-key^${AWSAccessKeySecret}^g" /usr/lib/logstash-6.5.1/logstash-APIM.conf
           sed -i "s/access-key/${AWSAccessKeyId}/g" /usr/lib/logstash-6.5.1/logstash-APIM.conf
           sed -i "s^ELASTICSEARCH_ENDPOINT^${ElasticSearchEndpoint}^g" /usr/lib/logstash-6.5.1/logstash-APIM.conf
@@ -460,12 +460,12 @@ Resources:
           sleep 30
           service puppet stop
           export APIMNODE1IP=$(python /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMInstance1)
-          sed -i "s/tm1.local/$APIMNODE1IP/g" /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/conf/deployment.toml
+          sed -i "s/tm1.local/$APIMNODE1IP/g" /usr/lib/wso2/wso2am/4.1.0/wso2am-4.1.0/repository/conf/deployment.toml
           export APIMNODE2IP=$(python /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMInstance2)
-          sed -i "s/tm2.local/$APIMNODE2IP/g" /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/conf/deployment.toml
-          sed -i "s/OTHERAPIMNODE/$APIMNODE2IP/g" /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/conf/deployment.toml
+          sed -i "s/tm2.local/$APIMNODE2IP/g" /usr/lib/wso2/wso2am/4.1.0/wso2am-4.1.0/repository/conf/deployment.toml
+          sed -i "s/OTHERAPIMNODE/$APIMNODE2IP/g" /usr/lib/wso2/wso2am/4.1.0/wso2am-4.1.0/repository/conf/deployment.toml
           sleep 100
-          sh /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/bin/api-manager.sh start
+          sh /usr/lib/wso2/wso2am/4.1.0/wso2am-4.1.0/bin/api-manager.sh start
           ${CustomUserData}
           sleep 30
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
@@ -593,8 +593,8 @@ Resources:
           wget --no-check-certificate --no-proxy 'http://wso2-cloudformation-templates.s3.amazonaws.com/private_ip_extractor.py' -P /usr/local/bin/
           wget --no-check-certificate --no-proxy 'http://wso2-cloudformation-templates.s3.amazonaws.com/apim_private_ip_extractor.py' -P /usr/local/bin/
           mv log_archiver.sh /usr/lib/
-          export ProductVersion=4.0.0
-          sed -i "s/Product_Version/4.0.0/g" /usr/lib/logstash-6.5.1/logstash-APIM.conf
+          export ProductVersion=4.1.0
+          sed -i "s/Product_Version/4.1.0/g" /usr/lib/logstash-6.5.1/logstash-APIM.conf
           sed -i "s^secret-key^${AWSAccessKeySecret}^g" /usr/lib/logstash-6.5.1/logstash-APIM.conf
           sed -i "s/access-key/${AWSAccessKeyId}/g" /usr/lib/logstash-6.5.1/logstash-APIM.conf
           sed -i "s^ELASTICSEARCH_ENDPOINT^${ElasticSearchEndpoint}^g" /usr/lib/logstash-6.5.1/logstash-APIM.conf
@@ -617,15 +617,14 @@ Resources:
               /opt/puppetlabs/bin/puppet agent -vt >> /var/log/puppetlog.log
           fi
           sleep 30
-
           service puppet stop
           export APIMNODE1IP=$(python /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMInstance1)
-          sed -i "s/tm1.local/$APIMNODE1IP/g" /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/conf/deployment.toml
+          sed -i "s/tm1.local/$APIMNODE1IP/g" /usr/lib/wso2/wso2am/4.1.0/wso2am-4.1.0/repository/conf/deployment.toml
           export APIMNODE2IP=$(python /usr/local/bin/private_ip_extractor.py ${AWS::Region} ${AWSAccessKeyId} ${AWSAccessKeySecret} WSO2APIMInstance2)
-          sed -i "s/tm2.local/$APIMNODE2IP/g" /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/conf/deployment.toml
-          sed -i "s/OTHERAPIMNODE/$APIMNODE1IP/g" /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/repository/conf/deployment.toml
+          sed -i "s/tm2.local/$APIMNODE2IP/g" /usr/lib/wso2/wso2am/4.1.0/wso2am-4.1.0/repository/conf/deployment.toml
+          sed -i "s/OTHERAPIMNODE/$APIMNODE1IP/g" /usr/lib/wso2/wso2am/4.1.0/wso2am-4.1.0/repository/conf/deployment.toml
           sleep 100
-          sh /usr/lib/wso2/wso2am/4.0.0/wso2am-4.0.0/bin/api-manager.sh start
+          sh /usr/lib/wso2/wso2am/4.1.0/wso2am-4.1.0/bin/api-manager.sh start
           ${CustomUserData}
           sleep 30
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
@@ -1039,7 +1038,7 @@ Resources:
           fi
           sleep 30
           service puppet stop
-          sh /usr/lib/wso2/wso2am/4.0.0/wso2mi-4.0.0/bin/micro-integrator.sh start
+          sh /usr/lib/wso2/wso2am/4.1.0/wso2mi-4.1.0/bin/micro-integrator.sh start
           if [[ ${OperatingSystem} == "Ubuntu1804" ]]; then
               /usr/local/bin/cfn-signal -e $? --stack ${AWS::StackName} --resource WSO2MINode1AutoScalingGroup --region ${AWS::Region}
           fi
@@ -1213,12 +1212,13 @@ Parameters:
   JDK:
     Description: Choose preferred JDK from the list
     Type: String
-    Default: "OPEN_JDK8"
+    Default: "ORACLE_JDK8"
     AllowedValues:
-      - "OPEN_JDK8"
       - "ORACLE_JDK8"
       - "CORRETTO_JDK8"
-      - "ADOPT_OPEN_JDK11"
+      - "TEMURIN_JDK8"
+      - "CORRETTO_JDK11"
+      - "TEMURIN_JDK11"
   ElasticSearchEndpoint:
     Description: If you have ElasticSearch endpoint to publish logs, else keep this empty
     Type: String
@@ -1241,10 +1241,10 @@ Parameters:
     Default: MySQL-5.7
     AllowedValues:
       - MySQL-5.7
-      - Postgres-9.6
-      - Postgres-10.5
-      - Oracle-SE1-11.2
-      - Oracle-SE2-12.1
+      - MySQL-8.0
+      - Postgres-11.15
+      - Postgres-12.10
+      - Oracle-SE2-19
       - SQLServer-SE-13.00
       - SQLServer-SE-14.00
   OperatingSystem:
@@ -1285,17 +1285,17 @@ Parameters:
 Mappings:
   WSO2PuppetMasterRegionMap:
     ap-southeast-2:
-       Ubuntu1804: ami-08fd0c33cde7b66a8
+       Ubuntu1804: ami-00e0394efc78b0754
     eu-west-1:
-       Ubuntu1804: ami-0a325890208046c45
+       Ubuntu1804: ami-0f967923a84f738ff
     us-east-1:
-       Ubuntu1804: ami-0efd22d5ad2d3ef1d
+       Ubuntu1804: ami-0195b8912085f5df5
     us-east-2:
-       Ubuntu1804: ami-02fdc155026e74ae0
+       Ubuntu1804: ami-06dd338cb9656866f
     us-west-1:
-       Ubuntu1804: ami-003c7e11d091a6b9d
+       Ubuntu1804: ami-0cc7dca3f38e3bcaf
     us-west-2:
-       Ubuntu1804: ami-0a54a1700c47bdb98
+       Ubuntu1804: ami-093398316628bedba
   WSO2APIMAMIRegionMap:
     ap-southeast-2:
       CentOS7: ami-0211f0ecd0e693937
@@ -1318,20 +1318,18 @@ Mappings:
   DBEngineMap:
     MySQL-5.7:
       DBEngine: "mysql_5.7"
-    MySQL-5.6:
-      DBEngine: "mysql_5.6"
-    Postgres-9.6:
-      DBEngine: "postgres_9.6"
-    Postgres-10.5:
-      DBEngine: "postgres_10.5"
+    MySQL-8.0:
+      DBEngine: "mysql_8.0"
+    Postgres-11.15:
+      DBEngine: "postgres_11.15"
+    Postgres-12.10:
+      DBEngine: "postgres_12.10"
     SQLServer-SE-13.00:
       DBEngine: "sqlserver-se_13.00"
     SQLServer-SE-14.00:
       DBEngine: "sqlserver-se_14.00"
-    Oracle-SE1-11.2:
-      DBEngine: "oracle-se1_11.2"
-    Oracle-SE2-12.1:
-      DBEngine: "oracle-se2_12.1"
+    Oracle-SE2-19:
+      DBEngine: "oracle-se2_19"
 Conditions:
   UseSQLServerDB: !Equals [sqlserver-se, !Select [0, !Split ["_", !FindInMap [ DBEngineMap, !Ref DB, DBEngine]]]]
   UseLicensedVersion: !Or [ !Equals [sqlserver, !Select [0, !Split ["-", !FindInMap [ DBEngineMap, !Ref DB, DBEngine]]]], !Equals [oracle, !Select [0, !Split ["-", !FindInMap [ DBEngineMap, !Ref DB, DBEngine]]]] ]

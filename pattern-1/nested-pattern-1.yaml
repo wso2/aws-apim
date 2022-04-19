@@ -163,10 +163,10 @@ Parameters:
     Default: MySQL-5.7
     AllowedValues:
       - MySQL-5.7
-      - Postgres-9.6
-      - Postgres-10.5
-      - Oracle-SE1-11.2
-      - Oracle-SE2-12.1
+      - MySQL-8.0
+      - Postgres-11.15
+      - Postgres-12.10
+      - Oracle-SE2-19
       - SQLServer-SE-13.00
       - SQLServer-SE-14.00
 
@@ -194,12 +194,13 @@ Parameters:
   JDK:
     Description: Choose preffered JDK from the list
     Type: String
-    Default: "OPEN_JDK8"
+    Default: "ORACLE_JDK8"
     AllowedValues:
-      - "OPEN_JDK8"
       - "ORACLE_JDK8"
       - "CORRETTO_JDK8"
-      - "ADOPT_OPEN_JDK11"
+      - "TEMURIN_JDK8"
+      - "CORRETTO_JDK11"
+      - "TEMURIN_JDK11"
 
   VpcCIDR:
     Description: Please enter the IP range (CIDR notation) for this VPC
@@ -276,7 +277,7 @@ Resources:
   WSO2Network:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.amazonaws.com/apim-4.0.0-cfn/network.yaml
+      TemplateURL: https://s3.amazonaws.com/apim-4.1.0-cfn/network.yaml
       TimeoutInMinutes: '60'
       Parameters:
         EnvironmentName: !Ref EnvironmentName
@@ -295,7 +296,7 @@ Resources:
   Database:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.amazonaws.com/apim-4.0.0-cfn/database.yaml
+      TemplateURL: https://s3.amazonaws.com/apim-4.1.0-cfn/database.yaml
       TimeoutInMinutes: '60'
       Parameters:
         DBUsername: !Ref DBUsername
@@ -314,7 +315,7 @@ Resources:
   WSO2APIManagerSetup:
     Type: AWS::CloudFormation::Stack
     Properties:
-      TemplateURL: https://s3.amazonaws.com/apim-4.0.0-cfn/pattern-1.yaml
+      TemplateURL: https://s3.amazonaws.com/apim-4.1.0-cfn/pattern-1.yaml
       TimeoutInMinutes: '60'
       Parameters:
         AWSAccessKeyId: !Ref AWSAccessKeyId
