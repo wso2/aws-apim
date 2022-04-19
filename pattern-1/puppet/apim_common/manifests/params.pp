@@ -17,7 +17,7 @@
 class apim_common::params {
 
   $packages = ["unzip"]
-  $version = "4.0.0"
+  $version = "4.1.0"
 
   # Set the location the product packages should reside in (eg: "local" in the /files directory, "remote" in a remote location)
   $pack_location = "local"
@@ -49,15 +49,21 @@ class apim_common::params {
 
   # JDK Distributions
   # WSO2 TestGrid specific configuration Params
-  if $jdk_version == 'Oracle_JDK8' {
-    $jdk_file_name = "jdk-8u144-linux-x64.tar.gz"
-    $jdk_name = "jdk1.8.0_144"
-  } elsif $jdk_version == 'OPEN_JDK8' {
-    $jdk_file_name = "jdk-8u192-ea-bin-b02-linux-x64-19_jul_2018.tar.gz"
-    $jdk_name = "jdk1.8.0_192"
-  } elsif $jdk_version == 'ADOPT_OPEN_JDK11' {
-    $jdk_file_name = "OpenJDK11U-jdk_x64_linux_hotspot_11.0.5_10.tar.gz"
-    $jdk_name = "jdk-11.0.5+10"
+  if $jdk_version == 'ORACLE_JDK8' {
+    $jdk_file_name = "jdk-8u311-linux-x64.tar.gz"
+    $jdk_name = "jdk1.8.0_311"
+  } elsif $jdk_version == 'CORRETTO_JDK8' {
+    $jdk_file_name = "amazon-corretto-8.322.06.2-linux-x64.tar.gz"
+    $jdk_name = "amazon-corretto-8.322.06.2-linux-x64"
+  } elsif $jdk_version == 'TEMURIN_JDK8' {
+    $jdk_file_name = "OpenJDK8U-jdk_x64_linux_hotspot_8u322b06.tar.gz"
+    $jdk_name = "jdk8u322-b06"
+  } elsif $jdk_version == 'CORRETTO_JDK11' {
+    $jdk_file_name = "amazon-corretto-11.0.14.10.1-linux-x64.tar.gz"
+    $jdk_name = "amazon-corretto-11.0.14.10.1-linux-x64"
+  } elsif $jdk_version == 'TEMURIN_JDK11' {
+    $jdk_file_name = "OpenJDK11U-jdk_x64_linux_hotspot_11.0.14_9.tar.gz"
+    $jdk_name = "jdk-11.0.14_9"
   }
 
   $java_dir = "/opt"
@@ -117,6 +123,7 @@ class apim_common::params {
     {
       type                                    => 'hybrid',
       name                                    => 'Default',
+      provider                                => 'wso2',
       description                             => 'This is a hybrid gateway that handles both production and sandbox token traffic.',
       server_url                              => 'https://localhost:${mgt.transport.https.port}${carbon.context}services/',
       ws_endpoint                             => 'ws://CF_ELB_DNS_NAME:9099',
@@ -237,5 +244,9 @@ class apim_common::params {
   # ----- user-mgt.xml config params -----
   $admin_username = 'admin'
   $admin_password = 'admin'
+
+  $token_exchange_enable = true
+  $token_exchange_allow_refresh_tokens = true
+  $token_exchange_iat_validity_period = '1h'
   
 }
