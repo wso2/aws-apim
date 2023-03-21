@@ -1,15 +1,14 @@
 # WSO2 API Manager deployment with WSO2 Micro Integrator - Database
 
 This is the phase two of deploying WSO2 API Manager deployment with WSO2 Micro Integrator. Use the [database.yaml](database.yaml) to create the required Database. The following are the tested database versions at the moment.
-
 ```
   - MySQL-5.7
   - MySQL-8.0
-  - Postgres-11.15
-  - Postgres-12.10
+  - Postgres-14.6
+  - Postgres-15.2
   - Oracle-SE2-19
-  - SQLServer-SE-13.00
   - SQLServer-SE-14.00
+  - SQLServer-SE-15.00
 ```
 
 If you already have a preconfigured database, please proceed to [Phase 3](../product/README.md).

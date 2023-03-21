@@ -152,17 +152,18 @@ Parameters:
       - db.m3.2xlarge
       - db.m4.large
       - db.m4.xlarge
+      - db.m5.large
   DB:
     Type: String
     Default: MySQL-5.7
     AllowedValues:
       - MySQL-5.7
       - MySQL-8.0
-      - Postgres-11.15
-      - Postgres-12.10
+      - Postgres-14.6
+      - Postgres-15.2
       - Oracle-SE2-19
-      - SQLServer-SE-13.00
       - SQLServer-SE-14.00
+      - SQLServer-SE-15.00
   EnvironmentName:
     Type: String
     Description: An environment name that is prefixed to resource names
@@ -182,14 +183,14 @@ Mappings:
       DBEngine: "mysql_5.7"
     MySQL-8.0:
       DBEngine: "mysql_8.0"
-    Postgres-11.15:
-      DBEngine: "postgres_11.15"
-    Postgres-12.10:
-      DBEngine: "postgres_12.10"
-    SQLServer-SE-13.00:
-      DBEngine: "sqlserver-se_13.00"
+    Postgres-14.6:
+      DBEngine: "postgres_14.6"
+    Postgres-15.2:
+      DBEngine: "postgres_15.2"
     SQLServer-SE-14.00:
       DBEngine: "sqlserver-se_14.00"
+    SQLServer-SE-15.00:
+      DBEngine: "sqlserver-se_15.00"
     Oracle-SE2-19:
       DBEngine: "oracle-se2_19"
 Conditions:
