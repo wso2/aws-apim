@@ -112,6 +112,7 @@ config_endpoint = "<%= @analytics_config_endpoint %>"
 auth_token = "<%= @analytics_auth_token %>"
 
 [apim.key_manager]
+enable_apikey_subscription_validation = true
 service_url = "<%= @key_manager_server_url %>"
 #username = "$ref{super_admin.username}"
 #password = "$ref{super_admin.password}"
@@ -258,6 +259,7 @@ id = "token_revocation"
 type = "org.wso2.carbon.identity.core.handler.AbstractIdentityHandler"
 name = "org.wso2.is.notification.ApimOauthEventInterceptor"
 order = 1
+
 [event_listener.properties]
 notification_endpoint = "https://localhost:${mgt.transport.https.port}/internal/data/v1/notify"
 username = "${admin.username}"

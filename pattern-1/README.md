@@ -7,7 +7,7 @@ This repository contains CloudFormation templates to deploy WSO2 API Manager Pat
 1. Checkout this repository into your local machine using the following Git command.
 ```
 git clone https://github.com/wso2/aws-apim.git
-git checkout 4.1.x
+git checkout 4.2.x
 ```
 
 2. Go to [AWS console](https://console.aws.amazon.com/ec2/v2/home#KeyPairs:sort=keyName) and specify a key value pair for authentication in a preferred region. <br>
